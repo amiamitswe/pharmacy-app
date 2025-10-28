@@ -10,6 +10,7 @@ import {
   Button,
 } from "@heroui/react";
 import { ThemeSwitcher } from "../common/ThemeSwitcher";
+import { Link } from "react-router";
 
 export const AcmeLogo = () => {
   return (
@@ -51,21 +52,21 @@ export default function CustomNavbar() {
       }}
     >
       <NavbarContent className="sm:hidden pr-3" justify="start">
-        <a href="/">
+        <Link to="/">
           <NavbarBrand>
             <AcmeLogo />
             <p className="font-bold text-inherit">ACME</p>
           </NavbarBrand>
-        </a>
+        </Link>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="start">
-        <a href="/">
+        <Link to="/">
           <NavbarBrand>
             <AcmeLogo />
             <p className="font-bold text-inherit">ACME</p>
           </NavbarBrand>
-        </a>
+        </Link>
         {/* <NavbarItem>
           <Link color="foreground" href="#">
             Features
@@ -86,12 +87,12 @@ export default function CustomNavbar() {
       <NavbarContent className="hidden sm:flex" justify="end">
         <ThemeSwitcher />
         <NavbarItem>
-          <a href="/login">Login</a>
+          <Link to="/login">Login</Link>
         </NavbarItem>
         <NavbarItem>
-          <a color="warning" href="/signup" variant="flat">
+          <Link color="warning" to="/signup" variant="flat">
             Sign Up
-          </a>
+          </Link>
         </NavbarItem>
       </NavbarContent>
 
@@ -105,7 +106,7 @@ export default function CustomNavbar() {
       <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            <a
+            <Link
               className="w-full"
               color={
                 index === 2
@@ -114,11 +115,11 @@ export default function CustomNavbar() {
                   ? "danger"
                   : "foreground"
               }
-              href={item === "Log Out" ? "/login" : "/"}
+              to={item === "Log Out" ? "/login" : "/"}
               size="lg"
             >
               {item}
-            </a>
+            </Link>
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
