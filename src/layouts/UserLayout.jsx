@@ -9,6 +9,7 @@ export default function UserLayout() {
       <h2>🙋 User Dashboard</h2>
       <nav>
         <Link to="/user">Dashboard</Link> |{" "}
+        <Link to="/user/orders">Orders</Link> |{" "}
         <Link to="/user/logout">Logout</Link>
       </nav>
       <Outlet />

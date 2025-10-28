@@ -1,48 +1,64 @@
-// auth-loaders.js
-// ✅ Use react-router for redirect in v6+
 import { redirect } from "react-router";
 import { getDefaultStore } from "jotai";
 import { authAtom } from "./atoms/authAtom";
+import userService from "./api-services/userService";
+import { addToast } from "@heroui/react";
 
-// ---- Fake one-time "server" fetch
 async function fetchUserFromServer() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const cookie = document.cookie
-        .split("; ")
-        .find((r) => r.startsWith("user_role="));
-      if (!cookie) return resolve(null);
-      const role = cookie.split("=")[1];
-      resolve({
-        name: role === "admin" ? "Admin Demo" : "User Demo",
-        role,
-        loggedIn: true,
-      });
-    }, 1000);
-  });
+  const cookie = document.cookie
+    .split("; ")
+    .find((r) => r.startsWith("user_role="));
+
+  if (!cookie) return null;
+
+  const response = await userService.profile();
+  if (response.status === 200) {
+    return {
+      name: response.data.user.name,
+      role: response.data.user.role,
+      loggedIn: true,
+    };
+  } else {
+    return null;
+  }
 }
 
 async function getUser() {
-  const store = getDefaultStore();
-  const auth = store.get(authAtom);
+  try {
+    const store = getDefaultStore();
+    const auth = store.get(authAtom);
 
-  // Run the "API" call only once
-  if (!auth?.initialized) {
-    const user = await fetchUserFromServer();
-    if (user) {
-      store.set(authAtom, { ...user, initialized: true });
-      return user;
+    // Run the "API" call only once
+    if (!auth?.initialized) {
+      const user = await fetchUserFromServer();
+      if (user) {
+        store.set(authAtom, { ...user, initialized: true });
+        return user;
+      }
+      store.set(authAtom, {
+        initialized: true,
+        loggedIn: false,
+        role: null,
+        name: null,
+      });
+      return null;
     }
-    store.set(authAtom, {
-      initialized: true,
-      loggedIn: false,
-      role: null,
-      name: null,
-    });
-    return null;
-  }
 
-  return auth?.loggedIn ? auth : null;
+    return auth?.loggedIn ? auth : null;
+  } catch (error) {
+    addToast({
+      title: error.data.message,
+      color: "danger",
+    });
+    if (error.status === 403) {
+      document.cookie =
+        "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      document.cookie =
+        "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      throw redirect("/login");
+    }
+  }
 }
 
 // Helpers

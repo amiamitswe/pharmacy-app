@@ -11,6 +11,9 @@ import {
 } from "@heroui/react";
 import { ThemeSwitcher } from "../common/ThemeSwitcher";
 import { Link } from "react-router";
+import { useAtom } from "jotai";
+import { authAtom } from "../../atoms/authAtom";
+import LogoutButton from "../common/LogoutButton";
 
 export const AcmeLogo = () => {
   return (
@@ -26,6 +29,7 @@ export const AcmeLogo = () => {
 };
 
 export default function CustomNavbar() {
+  const [user] = useAtom(authAtom);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const menuItems = [
@@ -67,33 +71,22 @@ export default function CustomNavbar() {
             <p className="font-bold text-inherit">ACME</p>
           </NavbarBrand>
         </Link>
-        {/* <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link aria-current="page" href="#">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
-        </NavbarItem> */}
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex" justify="end">
         <ThemeSwitcher />
-        <NavbarItem>
-          <Link to="/login">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="warning" to="/signup" variant="flat">
-            Sign Up
-          </Link>
-        </NavbarItem>
+        {!user?.loggedIn ? (
+          <>
+            <NavbarItem>
+              <Link to="/login">Login</Link>
+            </NavbarItem>
+            <NavbarItem>
+              <Link color="warning" to="/signup" variant="flat">
+                Sign Up
+              </Link>
+            </NavbarItem>
+          </>
+        ) : <LogoutButton />}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden" justify="end">

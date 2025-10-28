@@ -11,14 +11,17 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import AdminLinks from "./AdminLinks";
+import { useAtom } from "jotai";
+import { authAtom } from "../../atoms/authAtom";
 
 function AdminHeader() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [user] = useAtom(authAtom);
 
   return (
     <>
       <header className="bg-slate-100 dark:bg-slate-900 h-14 p-4 flex justify-between items-center">
-        <h1>Hello</h1>
+        <h1 className="text-large">Hello <span className="font-bold text-white">"{user.name}"</span></h1>
         <div>
           <div className="lg:flex hidden items-center gap-2">
             <ThemeSwitcher />
@@ -42,7 +45,7 @@ function AdminHeader() {
               </DrawerBody>
               <DrawerFooter>
                 <LogoutButton />
-                <Button color="danger"  onPress={onClose}>
+                <Button color="danger" onPress={onClose}>
                   Close
                 </Button>
                 <Button color="primary" onPress={onClose}>

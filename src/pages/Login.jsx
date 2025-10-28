@@ -2,8 +2,9 @@ import { useSetAtom } from "jotai";
 import { authAtom } from "../atoms/authAtom";
 import { Link, useNavigate } from "react-router";
 import * as Yup from "yup";
-import { Button, Card, CardBody, Input } from "@heroui/react";
+import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
 import { Formik } from "formik";
+import userService from "../api-services/userService";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -18,23 +19,55 @@ export default function Login() {
   const setAuth = useSetAtom(authAtom);
   const navigate = useNavigate();
 
-  function handleLogin(role) {
-    // Set cookie
-    document.cookie = `user_role=${role}; path=/; max-age=86400`;
+  const loginHandler = async (values) => {
+    try {
+      const response = await userService.login(values.email, values.password);
 
-    // Update Jotai (this triggers AuthWatcher)
-    setAuth({
-      initialized: true,
-      loggedIn: true,
-      role,
-      name: role === "admin" ? "Admin Demo" : "User Demo",
-    });
+      if (response?.status === 200 && response?.data?.["access-token"]) {
+        const role = response.data.user.role;
 
-    // Small delay before redirect ensures Jotai update propagates
-    setTimeout(() => {
-      navigate(role === "admin" ? "/admin" : "/user", { replace: true });
-    }, 100);
-  }
+        // // Set cookie
+        document.cookie = `user_role=${role}; path=/; max-age=86400`;
+        // document.cookie = `access_token=${token}; path=/; max-age=86400`;
+        // // access_token will set by server
+
+        // Update Jotai (this triggers AuthWatcher)
+        setAuth({
+          initialized: true,
+          loggedIn: true,
+          role,
+          name: response?.data?.user?.name,
+        });
+
+        // Small delay before redirect ensures Jotai update propagates
+        setTimeout(() => {
+          navigate(role === "admin" ? "/admin" : "/user", { replace: true });
+        }, 100);
+
+        addToast({
+          title: "Login successful",
+          color: "success",
+        });
+      } else {
+        addToast({
+          title:
+            response?.data?.error ||
+            response?.data?.message ||
+            "Something went wrong",
+          color: "danger",
+        });
+      }
+    } catch (e) {
+      addToast({
+        title:
+          e?.data?.error ||
+          e?.data?.message ||
+          e?.message ||
+          "Something went wrong",
+        color: "danger",
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-130px)] items-center justify-center p-4">
@@ -43,11 +76,13 @@ export default function Login() {
           <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{
+              email: "john@example.com",
+              password: "Password123",
+            }}
             validationSchema={LoginSchema}
             onSubmit={(values, { setSubmitting }) => {
-              // loginHandler(values);
-              handleLogin("admin");
+              loginHandler(values);
               setSubmitting(false);
             }}
           >
