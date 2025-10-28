@@ -50,7 +50,6 @@ const routes = [
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
-      { path: "logout", element: <LogoutButton /> },
       { path: "*", element: <AdminNotFound /> },
     ],
   },
