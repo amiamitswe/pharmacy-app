@@ -1,0 +1,10 @@
+import api from "./axios-config/axios";
+
+const medicineTypeService = {
+  getList: async (sort = "medicineType", q = "") => {
+    const response = await api.get(`/medicine-type?sort=${sort}&q=${q}`);
+    return response;
+  },
+};
+
+export default medicineTypeService;
