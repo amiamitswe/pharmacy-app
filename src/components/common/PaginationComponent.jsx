@@ -19,25 +19,28 @@ function PaginationComponent({
   showControls = false,
 }) {
   return (
-    <div className="flex justify-between items-center mt-4">
+    <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-4">
       <Pagination
         color="secondary"
         page={currentPage}
         total={total}
         onChange={onChange}
         showControls={showControls}
+        size="sm"
+        classNames={{
+          wrapper: "gap-2",
+        }}
       />
 
       <Select
-        label="Select Limit"
-        placeholder="Choose a number"
+        variant="faded"
         selectedKeys={new Set([String(limit)])}
         onSelectionChange={(keys) => {
           const first = Array.from(keys)[0];
           if (first != null) setLimit(Number(first));
         }}
         size="sm"
-        className="w-[150px]"
+        className="w-20 md:w-24"
       >
         {limitOption.map((opt) => (
           <SelectItem key={String(opt.value)}>{opt.label}</SelectItem>

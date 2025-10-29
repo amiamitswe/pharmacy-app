@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
-import CompanyList from "../../components/admin/CompanyList";
+import  { useEffect, useState } from "react";
 import PageTopContent from "../../components/common/PageTopContent";
 import { addToast, Card, useDisclosure } from "@heroui/react";
-import companyService from "../../api-services/companyService";
 import { useAtom } from "jotai";
-import { companyAtom } from "../../atoms/companyAtom";
 import CustomModal from "../../components/common/modal/CustomModal";
-import AddNewCompanyModal from "../../components/admin/modal/AddNewCompanyModal";
+import MCategoryList from "../../components/admin/MCategoryList";
+import { mCategoryAtom } from "../../atoms/mCategoryAtom";
+import mCategoryService from "../../api-services/mCategoryService";
 
-function AdminCompanies() {
+function AdminMedicineCategory() {
   const [editMode, setEditMode] = useState(false);
-  const [companyState, setCompanies] = useAtom(companyAtom);
+  const [mCategoryState, setMCategoryState] = useAtom(mCategoryAtom);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
-    const getAllCompanies = async () => {
+    const getAllCategories = async () => {
       try {
-        const response = await companyService.getList();
+        const response = await mCategoryService.getList();
 
         if (response.status === 200) {
-          setCompanies({
-            companies: response?.data?.result || [],
+          setMCategoryState({
+            categories: response?.data?.result || [],
             loading: false,
             error: null,
             count: response?.data?.dataCount || 0,
@@ -34,33 +33,33 @@ function AdminCompanies() {
       }
     };
 
-    getAllCompanies();
+    getAllCategories();
   }, []);
 
   return (
     <>
-      <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
+      <Card className="p-4" shadow="sm">
         <PageTopContent
-          title="Companies"
-          count={companyState?.count}
+          title="Category"
+          count={mCategoryState?.count}
           showEditMode
           editMode={editMode}
           setEditMode={setEditMode}
           addNewButtonClick={onOpen}
         />
-        <CompanyList editMode={editMode} />
+        <MCategoryList editMode={editMode} />
       </Card>
 
       <CustomModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        title="Add New Company"
+        title="Add New Category"
         isDismissable={false}
       >
-        <AddNewCompanyModal closeModal={onOpenChange} />
+       <p>Coming soon</p>
       </CustomModal>
     </>
   );
 }
 
-export default AdminCompanies;
+export default AdminMedicineCategory;

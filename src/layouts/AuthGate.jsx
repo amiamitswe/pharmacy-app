@@ -6,15 +6,9 @@ export default function AuthGate({ children }) {
 
   if (!auth.initialized) {
     return (
-      <div
-        style={{
-          display: "flex",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <p>🔄 Checking authentication...</p>
+      <div className="flex flex-col h-screen items-center justify-center gap-4 bg-stone-800 text-slate-200">
+        <span className="custom_loader"></span>
+        <p className="text-xl">🔄 Checking authentication...</p>
       </div>
     );
   }

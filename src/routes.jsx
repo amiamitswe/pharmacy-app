@@ -27,6 +27,7 @@ import PublicLayout from "./layouts/PublicLayout";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import AdminMedicineCategory from "./pages/admin/AdminMedicineCategory";
 
 
 const routes = [
@@ -57,6 +58,7 @@ const routes = [
       { index: true, element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
       { path: "companies", element: <AdminCompanies /> },
+      { path: "medicine_categories", element: <AdminMedicineCategory /> },
       { path: "medicine", element: <AdminMedicines /> },
       { path: "*", element: <AdminNotFound /> },
     ],

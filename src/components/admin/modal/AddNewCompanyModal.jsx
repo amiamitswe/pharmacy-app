@@ -45,7 +45,7 @@ function AddNewCompanyModal({ closeModal }) {
       }
     } catch (error) {
       addToast({
-        title: error.data.message || "Unable to add company",
+        title: error.data.error.company || error.data.message || "Unable to add company",
         color: "danger",
       });
     } finally {
@@ -71,11 +71,7 @@ function AddNewCompanyModal({ closeModal }) {
                 placeholder="Enter company name"
                 fullWidth
               />
-              <ErrorMessage
-                name="company"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
+              <ErrorMessage name="company" component="div" className="text-red-500 text-sm mt-1" />
             </div>
 
             <div>
@@ -92,20 +88,11 @@ function AddNewCompanyModal({ closeModal }) {
                   </SelectItem>
                 ))}
               </Select>
-              <ErrorMessage
-                name="country"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
+              <ErrorMessage name="country" component="div" className="text-red-500 text-sm mt-1" />
             </div>
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              color="primary"
-              disabled={isSubmitting}
-              fullWidth
-            >
+            <Button type="submit" color="primary" disabled={isSubmitting} fullWidth>
               {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
           </Form>

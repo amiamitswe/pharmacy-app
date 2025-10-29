@@ -10,7 +10,7 @@ import PaginationComponent from "../../components/common/PaginationComponent";
 
 function AdminMedicines() {
   const [editMode, setEditMode] = useState(false);
-  const [limit, setLimit] = useState(2);
+  const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [medicineState, setMedicines] = useAtom(medicineAtom);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

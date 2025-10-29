@@ -1,6 +1,6 @@
 "use client";
 import { Button, Input } from "@heroui/react";
-import { BiEdit } from "react-icons/bi";
+import { BiEdit, BiSearch } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { CiCirclePlus } from "react-icons/ci";
 
@@ -13,34 +13,32 @@ function PageTopContent({
   addNewButtonClick = () => {},
 }) {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex md:items-center flex-col md:flex-row justify-between mb-4 gap-4">
       <h1 className="text-xl">
         {title} {count ? `(${count})` : ""}
       </h1>
       <div className="flex items-center gap-4">
-        <Input placeholder="Search here ..." variant="bordered" />
+        <Input placeholder="Search here ..." variant="bordered" startContent={<BiSearch />} />
         <Button
           color="success"
           variant="bordered"
-          className="w-[200px]"
+          className="md:w-[200px]"
           startContent={<CiCirclePlus className="text-2xl" />}
           onPress={addNewButtonClick}
+          isIconOnly
         >
-          Add new
+          <span className="hidden md:block ml-2">Add new</span>
         </Button>
         {showEditMode && (
           <Button
             color={editMode ? "danger" : "primary"}
             variant="bordered"
-            className="w-[200px]"
+            className="md:w-[200px]"
             onPress={() => setEditMode(!editMode)}
+            isIconOnly
           >
-            {!editMode ? (
-              <BiEdit className="text-2xl" />
-            ) : (
-              <CgClose className="text-2xl" />
-            )}{" "}
-            {!editMode ? "Edit Mode" : "Close Edit"}
+            {!editMode ? <BiEdit className="text-2xl" /> : <CgClose className="text-2xl" />}{" "}
+            <span className="hidden md:block ml-2"> {!editMode ? "Edit Mode" : "Close Edit"}</span>
           </Button>
         )}
       </div>

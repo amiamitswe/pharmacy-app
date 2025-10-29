@@ -11,7 +11,7 @@ export default function AdminLayout() {
     <>
       <AuthWatcher />
       <div className="grid grid-cols-12">
-        <div className="hidden overflow-visible relative z-10 lg:block lg:col-span-2 bg-slate-100 dark:bg-slate-900 min-h-screen border-r-1.5 border-slate-200 dark:border-slate-800">
+        <div className="hidden overflow-visible relative z-10 lg:block lg:col-span-2 bg-slate-100 dark:bg-slate-900 min-h-screen border-r-1.5 border-slate-300 dark:border-slate-700">
           <div className="p-4">
             <Link to="/admin" className="flex items-center gap-2 text-lg">
               <AcmeLogo /> Admin Panel
@@ -22,7 +22,7 @@ export default function AdminLayout() {
         <div className="lg:col-span-10 col-span-12">
           <AdminHeader />
 
-          <main className="min-h-[calc(100vh-112px)] flex flex-col justify-between p-6">
+          <main className="min-h-[calc(100vh-112px)] flex flex-col justify-between md:p-6 p-4">
             <Outlet />
           </main>
           <Footer />
