@@ -12,7 +12,6 @@ const links = [
   { id: 8, label: "Contact", to: "/admin/contact" },
   { id: 9, label: "About", to: "/admin/about" },
   { id: 10, label: "Orders", to: "/admin/orders" },
-  { id: 11, label: "Logout", to: "/admin/logout" },
 ];
 
 function AdminLinks() {

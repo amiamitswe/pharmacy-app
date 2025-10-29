@@ -7,21 +7,26 @@ import {
 } from "./auth-loaders";
 
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import AdminLayout from "./layouts/AdminLayout";
+
+import PublicAbout from "./pages/PublicAbout";
+import PublicNotFound from "./pages/PublicNotFound";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
-import PublicAbout from "./pages/PublicAbout";
-import LogoutButton from "./components/common/LogoutButton";
-import PublicNotFound from "./pages/PublicNotFound";
+import AdminCompanies from "./pages/admin/AdminCompanies";
 import AdminNotFound from "./pages/admin/AdminNotFound";
-import PublicLayout from "./layouts/PublicLayout";
 
-// (Optional) user-only pages live under /user/* but there is no generic /user dashboard
-import UserLayout from "./layouts/UserLayout";
 import UserOrders from "./pages/user/UserOrders";
 import UserNotFound from "./pages/user/UserNotFound";
-import Signup from "./pages/Signup";
+
+// (Optional) user-only pages live under /user/* but there is no generic /user dashboard
+import AdminLayout from "./layouts/admin/AdminLayout";
+import UserLayout from "./layouts/UserLayout";
+import PublicLayout from "./layouts/PublicLayout";
+
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+
 
 const routes = [
   // 🌐 Public site — admin is redirected away, users are allowed
@@ -50,6 +55,7 @@ const routes = [
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
+      { path: "companies", element: <AdminCompanies /> },
       { path: "*", element: <AdminNotFound /> },
     ],
   },
@@ -61,7 +67,6 @@ const routes = [
     loader: requireUser, // blocks anon and admins
     children: [
       { path: "orders", element: <UserOrders /> },
-      { path: "logout", element: <LogoutButton /> },
       { path: "*", element: <UserNotFound /> },
     ],
   },

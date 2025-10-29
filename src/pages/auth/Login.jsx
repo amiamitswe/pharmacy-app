@@ -1,19 +1,13 @@
-import React from "react";
-import { Formik } from "formik";
+import { useSetAtom } from "jotai";
+import { authAtom } from "../../atoms/authAtom";
+import { Link, useNavigate } from "react-router";
 import * as Yup from "yup";
 import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
-import { Link, useNavigate } from "react-router";
-import userService from "../api-services/userService";
+import { Formik } from "formik";
+import userService from "../../api-services/userService";
 
-// ✅ Validation Schema
-const SignupSchema = Yup.object().shape({
-  fullName: Yup.string()
-    .min(3, "Full name must be at least 3 characters")
-    .required("Required"),
+const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
-  phone: Yup.string()
-    .matches(/^[0-9]{10,15}$/, "Phone must be 10–15 digits")
-    .required("Required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .matches(/[A-Z]/, "Must contain at least one uppercase letter")
@@ -21,22 +15,37 @@ const SignupSchema = Yup.object().shape({
     .required("Required"),
 });
 
-const Signup = () => {
+export default function Login() {
+  const setAuth = useSetAtom(authAtom);
   const navigate = useNavigate();
 
-  const signUpHandler = async (values, { setErrors }) => {
+  const loginHandler = async (values) => {
     try {
-      const response = await userService.signup(
-        values.fullName,
-        values.email,
-        values.phone,
-        values.password
-      );
+      const response = await userService.login(values.email, values.password);
 
-      if (response?.status === 201) {
+      if (response?.status === 200 && response?.data?.["access-token"]) {
+        const role = response.data.user.role;
+
+        if (import.meta.env.VITE_ENVIRONMENT === "prod") {
+          // // Set cookie
+          document.cookie = `user_role=${role}; path=/; max-age=86400`;
+          // document.cookie = `access_token=${token}; path=/; max-age=86400`;
+          // // access_token will set by server
+        } else {
+          localStorage.setItem("accessToken", response.data["access-token"]);
+        }
+
+        // Update Jotai (this triggers AuthWatcher)
+        setAuth({
+          initialized: true,
+          loggedIn: true,
+          role,
+          name: response?.data?.user?.name,
+        });
+
         // Small delay before redirect ensures Jotai update propagates
         setTimeout(() => {
-          navigate("/login", { replace: true });
+          navigate(role === "admin" ? "/admin" : "/user", { replace: true });
         }, 100);
 
         addToast({
@@ -45,17 +54,20 @@ const Signup = () => {
         });
       } else {
         addToast({
-          title: response?.data?.message || "Something went wrong",
+          title:
+            response?.data?.error ||
+            response?.data?.message ||
+            "Something went wrong",
           color: "danger",
         });
       }
     } catch (e) {
-      if (e?.data?.error) {
-        setErrors(e.data.error);
-      }
-
       addToast({
-        title: e?.data?.message || e?.message || "Something went wrong",
+        title:
+          e?.data?.error ||
+          e?.data?.message ||
+          e?.message ||
+          "Something went wrong",
         color: "danger",
       });
     }
@@ -65,18 +77,16 @@ const Signup = () => {
     <div className="flex min-h-[calc(100vh-130px)] items-center justify-center p-4">
       <Card className="w-full max-w-lg shadow-lg">
         <CardBody className="p-10">
-          <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
           <Formik
             initialValues={{
-              fullName: "Amit",
-              email: "amit@gm.co",
-              phone: "01918876543",
-              password: "Aadfsadf1",
+              email: "john@example.com",
+              password: "Password123",
             }}
-            validationSchema={SignupSchema}
-            onSubmit={(values, { setSubmitting, setErrors }) => {
-              signUpHandler(values, { setErrors });
+            validationSchema={LoginSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              loginHandler(values);
               setSubmitting(false);
             }}
           >
@@ -92,19 +102,6 @@ const Signup = () => {
               <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-4">
                   <Input
-                    label="Full Name"
-                    size="sm"
-                    name="fullName"
-                    value={values.fullName}
-                    onValueChange={(v) => setFieldValue("fullName", v)}
-                    onBlur={() => setFieldTouched("fullName", true)}
-                    isInvalid={touched.fullName && !!errors.fullName}
-                    errorMessage={touched.fullName ? errors.fullName : ""}
-                    autoComplete="name"
-                    variant="bordered"
-                  />
-
-                  <Input
                     label="Email"
                     size="sm"
                     type="email"
@@ -119,20 +116,6 @@ const Signup = () => {
                   />
 
                   <Input
-                    label="Phone"
-                    size="sm"
-                    type="tel"
-                    name="phone"
-                    value={values.phone}
-                    onValueChange={(v) => setFieldValue("phone", v)}
-                    onBlur={() => setFieldTouched("phone", true)}
-                    isInvalid={touched.phone && !!errors.phone}
-                    errorMessage={touched.phone ? errors.phone : ""}
-                    autoComplete="tel"
-                    variant="bordered"
-                  />
-
-                  <Input
                     label="Password"
                     size="sm"
                     type="password"
@@ -142,7 +125,7 @@ const Signup = () => {
                     onBlur={() => setFieldTouched("password", true)}
                     isInvalid={touched.password && !!errors.password}
                     errorMessage={touched.password ? errors.password : ""}
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                     variant="bordered"
                   />
 
@@ -152,13 +135,13 @@ const Signup = () => {
                     disabled={isSubmitting}
                     className="w-full"
                   >
-                    Sign Up
+                    Login
                   </Button>
 
                   <p className="text-sm text-center text-gray-500">
-                    Already have an account?{" "}
-                    <Link to="/login" className="text-primary font-medium">
-                      Login
+                    Don’t have an account?{" "}
+                    <Link to="/signup" className="text-primary font-medium">
+                      Sign up
                     </Link>
                   </p>
                 </div>
@@ -169,6 +152,4 @@ const Signup = () => {
       </Card>
     </div>
   );
-};
-
-export default Signup;
+}

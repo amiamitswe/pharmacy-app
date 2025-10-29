@@ -7,7 +7,7 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
-    "Cache-Control": "no-store",   // hint
+    "Cache-Control": "no-store", // hint
     Pragma: "no-cache",
   },
   withCredentials: true,
@@ -26,7 +26,9 @@ api.interceptors.request.use(
       config.url && PUBLIC_ENDPOINTS.some((url) => config.url.startsWith(url));
 
     if (!isPublic) {
-      const token = import.meta.env.VITE_ENVIRONMENT !== "prod" && localStorage.getItem("accessToken");
+      const token =
+        import.meta.env.VITE_ENVIRONMENT !== "prod" &&
+        localStorage.getItem("accessToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

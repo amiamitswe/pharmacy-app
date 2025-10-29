@@ -21,7 +21,7 @@ function AdminHeader() {
   return (
     <>
       <header className="bg-slate-100 dark:bg-slate-900 h-14 p-4 flex justify-between items-center">
-        <h1 className="text-large">Hello <span className="font-bold text-white">"{user.name}"</span></h1>
+        <h1 className="text-large">Hello <span className="font-bold dark:text-white text-black">"{user.name}"</span></h1>
         <div>
           <div className="lg:flex hidden items-center gap-2">
             <ThemeSwitcher />

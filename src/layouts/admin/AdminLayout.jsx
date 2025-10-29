@@ -1,10 +1,10 @@
-import { Outlet } from "react-router";
-import AuthWatcher from "./AuthWatcher";
-import Footer from "../components/layout/Footer";
-import AdminLinks from "./admin/AdminLinks";
-import { Link } from "react-router";
-import { AcmeLogo } from "../components/layout/CustomNavbar";
-import AdminHeader from "./admin/AdminHeader";
+import { Outlet, Link } from "react-router";
+
+import AdminLinks from "./AdminLinks";
+import AdminHeader from "./AdminHeader";
+import AuthWatcher from "../AuthWatcher";
+import Footer from "../../components/layout/Footer";
+import { AcmeLogo } from "../../components/layout/CustomNavbar";
 
 export default function AdminLayout() {
   return (
@@ -19,7 +19,7 @@ export default function AdminLayout() {
             <AdminLinks />
           </div>
         </div>
-        <div className="col-span-12 lg:col-span-10 xl:col-span-8">
+        <div className="lg:col-span-10 col-span-12">
           <AdminHeader />
 
           <main className="min-h-[calc(100vh-112px)] flex flex-col justify-between p-6">
