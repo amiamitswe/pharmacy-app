@@ -7,6 +7,8 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
+    "Cache-Control": "no-store",   // hint
+    Pragma: "no-cache",
   },
   withCredentials: true,
 });
