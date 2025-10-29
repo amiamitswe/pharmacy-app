@@ -1,22 +1,22 @@
 import { Button } from "@heroui/react";
 import { useAtom } from "jotai";
 import React from "react";
-import { companyAtom } from "../../atoms/companyAtom";
 import { BiEditAlt, BiTrash } from "react-icons/bi";
+import { medicineAtom } from "../../atoms/medicineAtom";
 
-function CompanyList({ editMode }) {
-  const [companyState] = useAtom(companyAtom);
+function MedicineList({ editMode }) {
+  const [medicineState] = useAtom(medicineAtom);
   return (
     <div className="mt-4">
       <div className="grid grid-cols-2 gap-4">
-        {companyState?.companies?.map((company, index) => (
+          {medicineState?.medicines?.map((medicine, index) => (
           <div
             key={index}
-            className="col-span-2 sm:col-span-1 border-1 border-gray-200 dark:border-gray-700 rounded-md p-4 flex justify-between items-center min-h-[66px]"
+            className="col-span-2 border-1 border-gray-200 dark:border-gray-700 rounded-md p-4 flex justify-between items-center min-h-[66px]"
           >
             <p className="capitalize text-lg">
-              {company.company}{" "}
-              <span className="text-sm text-gray-500">({company.country})</span>
+              {medicine.medicineName}{" "}
+              {/* <span className="text-sm text-gray-500">({company.country})</span> */}
             </p>
 
             {editMode && (
@@ -36,4 +36,4 @@ function CompanyList({ editMode }) {
   );
 }
 
-export default CompanyList;
+export default MedicineList;

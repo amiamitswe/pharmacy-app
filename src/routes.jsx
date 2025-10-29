@@ -14,6 +14,7 @@ import PublicNotFound from "./pages/PublicNotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCompanies from "./pages/admin/AdminCompanies";
+import AdminMedicines from "./pages/admin/AdminMedicines";
 import AdminNotFound from "./pages/admin/AdminNotFound";
 
 import UserOrders from "./pages/user/UserOrders";
@@ -56,6 +57,7 @@ const routes = [
       { index: true, element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
       { path: "companies", element: <AdminCompanies /> },
+      { path: "medicine", element: <AdminMedicines /> },
       { path: "*", element: <AdminNotFound /> },
     ],
   },

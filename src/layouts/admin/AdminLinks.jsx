@@ -4,7 +4,7 @@ import { NavLink } from "react-router";
 const links = [
   // { id: 1, label: "Dashboard", to: "/admin" },
   { id: 2, label: "Companies", to: "/admin/companies" },
-  { id: 3, label: "Products", to: "/admin/products" },
+  { id: 3, label: "Products", to: "/admin/medicine" },
   { id: 4, label: "Categories", to: "/admin/categories" },
   { id: 5, label: "Users", to: "/admin/users" },
   { id: 6, label: "Settings", to: "/admin/settings" },

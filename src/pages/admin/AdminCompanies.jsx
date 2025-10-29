@@ -6,7 +6,7 @@ import companyService from "../../api-services/companyService";
 import { useAtom } from "jotai";
 import { companyAtom } from "../../atoms/companyAtom";
 import CustomModal from "../../components/common/modal/CustomModal";
-import AddNewCompanyModal from "../../layouts/admin/modal/AddNewCompanyModal";
+import AddNewCompanyModal from "../../components/admin/modal/AddNewCompanyModal";
 
 function AdminCompanies() {
   const [editMode, setEditMode] = useState(false);
