@@ -9,7 +9,7 @@ async function fetchUserFromServer() {
     .split("; ")
     .find((r) => r.startsWith("user_role="));
 
-  if (!cookie) return null;
+  if (!cookie && !localStorage.getItem("accessToken")) return null;
 
   const response = await userService.profile();
   if (response.status === 200) {
@@ -55,6 +55,8 @@ async function getUser() {
         "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       document.cookie =
         "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      localStorage.removeItem("accessToken");
 
       throw redirect("/login");
     }

@@ -26,10 +26,14 @@ export default function Login() {
       if (response?.status === 200 && response?.data?.["access-token"]) {
         const role = response.data.user.role;
 
-        // // Set cookie
-        document.cookie = `user_role=${role}; path=/; max-age=86400`;
-        // document.cookie = `access_token=${token}; path=/; max-age=86400`;
-        // // access_token will set by server
+        if (import.meta.env.VITE_ENVIRONMENT === "prod") {
+          // // Set cookie
+          document.cookie = `user_role=${role}; path=/; max-age=86400`;
+          // document.cookie = `access_token=${token}; path=/; max-age=86400`;
+          // // access_token will set by server
+        } else {
+          localStorage.setItem("accessToken", response.data["access-token"]);
+        }
 
         // Update Jotai (this triggers AuthWatcher)
         setAuth({

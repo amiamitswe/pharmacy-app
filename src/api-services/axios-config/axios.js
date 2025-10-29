@@ -26,7 +26,7 @@ api.interceptors.request.use(
       config.url && PUBLIC_ENDPOINTS.some((url) => config.url.startsWith(url));
 
     if (!isPublic) {
-      const token = localStorage.getItem("accessToken");
+      const token = import.meta.env.VITE_ENVIRONMENT !== "prod" && localStorage.getItem("accessToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
