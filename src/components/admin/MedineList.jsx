@@ -7,9 +7,9 @@ import { medicineAtom } from "../../atoms/medicineAtom";
 function MedicineList({ editMode }) {
   const [medicineState] = useAtom(medicineAtom);
   return (
-    <div className="mt-4">
+    <>
       <div className="grid grid-cols-2 gap-4">
-          {medicineState?.medicines?.map((medicine, index) => (
+        {medicineState?.medicines?.map((medicine, index) => (
           <div
             key={index}
             className="col-span-2 border-1 border-gray-200 dark:border-gray-700 rounded-md p-4 flex justify-between items-center min-h-[66px]"
@@ -32,7 +32,7 @@ function MedicineList({ editMode }) {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 

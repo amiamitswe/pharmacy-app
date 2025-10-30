@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button, Card } from "@heroui/react";
 import { useAtom } from "jotai";
 import React from "react";
 import { companyAtom } from "../../atoms/companyAtom";
@@ -7,7 +7,7 @@ import { BiEditAlt, BiTrash } from "react-icons/bi";
 function CompanyList({ editMode }) {
   const [companyState] = useAtom(companyAtom);
   return (
-    <div className="mt-4">
+    <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
       <div className="grid grid-cols-2 gap-4">
         {companyState?.companies?.map((company, index) => (
           <div
@@ -32,7 +32,7 @@ function CompanyList({ editMode }) {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 

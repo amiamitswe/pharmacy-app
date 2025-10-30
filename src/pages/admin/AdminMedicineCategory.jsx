@@ -1,6 +1,6 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PageTopContent from "../../components/common/PageTopContent";
-import { addToast, Card, useDisclosure } from "@heroui/react";
+import { addToast, useDisclosure } from "@heroui/react";
 import { useAtom } from "jotai";
 import CustomModal from "../../components/common/modal/CustomModal";
 import MCategoryList from "../../components/admin/MCategoryList";
@@ -38,17 +38,15 @@ function AdminMedicineCategory() {
 
   return (
     <>
-      <Card className="p-4" shadow="sm">
-        <PageTopContent
-          title="Category"
-          count={mCategoryState?.count}
-          showEditMode
-          editMode={editMode}
-          setEditMode={setEditMode}
-          addNewButtonClick={onOpen}
-        />
-        <MCategoryList editMode={editMode} />
-      </Card>
+      <PageTopContent
+        title="Category"
+        count={mCategoryState?.count}
+        showEditMode
+        editMode={editMode}
+        setEditMode={setEditMode}
+        addNewButtonClick={onOpen}
+      />
+      <MCategoryList editMode={editMode} />
 
       <CustomModal
         isOpen={isOpen}
@@ -56,7 +54,7 @@ function AdminMedicineCategory() {
         title="Add New Category"
         isDismissable={false}
       >
-       <p>Coming soon</p>
+        <p>Coming soon</p>
       </CustomModal>
     </>
   );

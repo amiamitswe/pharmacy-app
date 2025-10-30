@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button, Card } from "@heroui/react";
 import { useAtom } from "jotai";
 import { BiEditAlt, BiTrash } from "react-icons/bi";
 import { mCategoryAtom } from "../../atoms/mCategoryAtom";
@@ -7,7 +7,7 @@ function MCategoryList({ editMode }) {
   const [mCategoryState] = useAtom(mCategoryAtom);
 
   return (
-    <div className="mt-4">
+    <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
       <div className="grid grid-cols-2 gap-4">
         {mCategoryState?.categories?.map((category, index) => (
           <div
@@ -32,7 +32,7 @@ function MCategoryList({ editMode }) {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 

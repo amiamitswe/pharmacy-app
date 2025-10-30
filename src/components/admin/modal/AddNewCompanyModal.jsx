@@ -39,13 +39,17 @@ function AddNewCompanyModal({ closeModal }) {
         setCompanies((pre) => ({
           ...pre,
           companies: [...pre.companies, { ...values }],
+          count: pre.count + 1,
         }));
         resetForm();
-        closeModal();
+        closeModal?.();
       }
     } catch (error) {
       addToast({
-        title: error.data.error.company || error.data.message || "Unable to add company",
+        title:
+          error.data.error.company ||
+          error.data.message ||
+          "Unable to add company",
         color: "danger",
       });
     } finally {
@@ -71,7 +75,11 @@ function AddNewCompanyModal({ closeModal }) {
                 placeholder="Enter company name"
                 fullWidth
               />
-              <ErrorMessage name="company" component="div" className="text-red-500 text-sm mt-1" />
+              <ErrorMessage
+                name="company"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
             </div>
 
             <div>
@@ -88,13 +96,25 @@ function AddNewCompanyModal({ closeModal }) {
                   </SelectItem>
                 ))}
               </Select>
-              <ErrorMessage name="country" component="div" className="text-red-500 text-sm mt-1" />
+              <ErrorMessage
+                name="country"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
             </div>
 
-            {/* Submit Button */}
-            <Button type="submit" color="primary" disabled={isSubmitting} fullWidth>
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
+            <div className="flex justify-end gap-2 mt-2">
+              <Button
+                type="button"
+                variant="flat"
+                onPress={() => closeModal?.()}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" color="primary" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </div>
           </Form>
         )}
       </Formik>
