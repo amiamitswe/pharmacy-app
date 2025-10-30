@@ -6,6 +6,7 @@ import CustomModal from "../../components/common/modal/CustomModal";
 import MCategoryList from "../../components/admin/MCategoryList";
 import { mCategoryAtom } from "../../atoms/mCategoryAtom";
 import mCategoryService from "../../api-services/mCategoryService";
+import AddNewCategory from "../../components/admin/modal/AddNewCategory";
 
 function AdminMedicineCategory() {
   const [editMode, setEditMode] = useState(false);
@@ -54,7 +55,7 @@ function AdminMedicineCategory() {
         title="Add New Category"
         isDismissable={false}
       >
-        <p>Coming soon</p>
+        <AddNewCategory closeModal={onOpenChange} />
       </CustomModal>
     </>
   );

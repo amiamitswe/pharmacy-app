@@ -29,6 +29,7 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import AdminMedicineCategory from "./pages/admin/AdminMedicineCategory";
 import AdminMedicineType from "./pages/admin/AdminMedicineType";
+import AdminGeneric from "./pages/admin/AdminGeneric";
 
 
 const routes = [
@@ -62,6 +63,7 @@ const routes = [
       { path: "medicine_categories", element: <AdminMedicineCategory /> },
       { path: "medicine", element: <AdminMedicines /> },
       { path: "medicine_type", element: <AdminMedicineType /> },
+      { path: "medicine_generic", element: <AdminGeneric /> },
       { path: "*", element: <AdminNotFound /> },
     ],
   },
