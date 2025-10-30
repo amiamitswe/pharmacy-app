@@ -2,43 +2,37 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input, Button, Select, SelectItem, addToast } from "@heroui/react";
-import companyService from "../../../api-services/companyService";
-import { companyAtom } from "../../../atoms/companyAtom";
 import { useSetAtom } from "jotai";
+import { mCategoryService } from "../../../api-services";
+import { mCategoryAtom } from "../../../atoms/mCategoryAtom";
 
-const countryList = [
-  { label: "Bangladesh", value: "Bangladesh" },
-  { label: "India", value: "India" },
-  { label: "Singapore", value: "Singapore" },
-  { label: "China", value: "China" },
-];
-
-// ✅ Validation schema
 const validationSchema = Yup.object({
-  company: Yup.string()
-    .min(2, "Company name must be at least 2 characters")
-    .required("Company name is required"),
-  country: Yup.string().required("Please select a country"),
+  categoryName: Yup.string()
+    .min(2, "Category name must be at least 2 characters")
+    .required("Category name is required"),
+  details: Yup.string()
+    .min(10, "Details must be at least 10 characters")
+    .required("Details is required"),
 });
 
-function AddNewCompanyModal({ closeModal }) {
-  const setCompanies = useSetAtom(companyAtom);
+function AddNewCategory({ closeModal }) {
+  const setMCategories = useSetAtom(mCategoryAtom);
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await companyService.addNewCompany({
-        company: values.company,
-        country: values.country,
+      const response = await mCategoryService.addNewCategory({
+        categoryName: values.categoryName,
+        details: values.details,
       });
 
       if (response.status === 201) {
         addToast({
-          title: "Company added successfully",
+          title: "Category added successfully",
           color: "success",
         });
-        setCompanies((pre) => ({
+        setMCategories((pre) => ({
           ...pre,
-          companies: [...pre.companies, { ...values }],
+          categories: [...pre.categories, { ...values }],
           count: pre.count + 1,
         }));
         resetForm();
@@ -47,9 +41,9 @@ function AddNewCompanyModal({ closeModal }) {
     } catch (error) {
       addToast({
         title:
-          error.data.error.company ||
+          error.data.error.categoryName ||
           error.data.message ||
-          "Unable to add company",
+          "Unable to add new category",
         color: "danger",
       });
     } finally {
@@ -60,44 +54,36 @@ function AddNewCompanyModal({ closeModal }) {
   return (
     <div>
       <Formik
-        initialValues={{ company: "", country: "" }}
+        initialValues={{ categoryName: "", details: "" }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, isSubmitting }) => (
+        {({ isSubmitting }) => (
           <Form className="flex flex-col gap-4">
-            {/* Company Field */}
             <div>
               <Field
-                name="company"
+                name="categoryName"
                 as={Input}
-                label="Company Name"
-                placeholder="Enter company name"
+                label="Category Name"
+                placeholder="Enter category name"
                 fullWidth
               />
               <ErrorMessage
-                name="company"
+                name="categoryName"
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
             </div>
-
             <div>
-              <Select
-                label="Select Country"
-                placeholder="Choose a country"
-                value={values.country}
-                onChange={(e) => setFieldValue("country", e.target.value)}
+              <Field
+                name="details"
+                as={Input}
+                label="Category Details"
+                placeholder="Enter details"
                 fullWidth
-              >
-                {countryList.map((country) => (
-                  <SelectItem key={country.value} value={country.value}>
-                    {country.label}
-                  </SelectItem>
-                ))}
-              </Select>
+              />
               <ErrorMessage
-                name="country"
+                name="details"
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
@@ -122,4 +108,4 @@ function AddNewCompanyModal({ closeModal }) {
   );
 }
 
-export default AddNewCompanyModal;
+export default AddNewCategory;

@@ -7,6 +7,7 @@ import CustomModal from "../../components/common/modal/CustomModal";
 import MedicineTypeList from "../../components/admin/MedicineTypeList";
 import { medicineTypeAtom } from "../../atoms/medicineTypeAtom";
 import { medicineTypeService } from "../../api-services";
+import AddNewMedicineType from "../../components/admin/modal/AddNewMedicineType";
 
 function AdminMedicineType() {
   const [editMode, setEditMode] = useState(false);
@@ -39,17 +40,15 @@ function AdminMedicineType() {
 
   return (
     <>
-      <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
-        <PageTopContent
-          title="Medicine Type"
-          count={medicineTypeState?.count}
-          showEditMode
-          editMode={editMode}
-          setEditMode={setEditMode}
-          addNewButtonClick={onOpen}
-        />
-        <MedicineTypeList editMode={editMode} />
-      </Card>
+      <PageTopContent
+        title="Medicine Type"
+        count={medicineTypeState?.count}
+        showEditMode
+        editMode={editMode}
+        setEditMode={setEditMode}
+        addNewButtonClick={onOpen}
+      />
+      <MedicineTypeList editMode={editMode} />
 
       <CustomModal
         isOpen={isOpen}
@@ -57,7 +56,7 @@ function AdminMedicineType() {
         title="Add New Medicine Type"
         isDismissable={false}
       >
-        <p>Coming soon...</p>
+        <AddNewMedicineType closeModal={onOpenChange} />
       </CustomModal>
     </>
   );

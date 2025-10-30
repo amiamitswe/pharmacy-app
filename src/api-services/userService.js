@@ -29,6 +29,13 @@ const userService = {
     const response = await api.get("/user");
     return response;
   },
+
+  getAllUsers: async (payload) => {
+    const response = await api.get("/user/get-all-users", {
+      params: payload,
+    });
+    return response;
+  },
 };
 
 export default userService;

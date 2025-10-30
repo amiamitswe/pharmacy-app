@@ -3,6 +3,7 @@ import mCategoryService from "./mCategoryService";
 import medicineService from "./medicineService";
 import medicineTypeService from "./medicineTypeService";
 import userService from "./userService";
+import medicineGenericService from "./medicineGenericService";
 
 export {
   mCategoryService,
@@ -10,4 +11,5 @@ export {
   userService,
   companyService,
   medicineTypeService,
+  medicineGenericService,
 };

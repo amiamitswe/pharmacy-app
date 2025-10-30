@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CompanyList from "../../components/admin/CompanyList";
 import PageTopContent from "../../components/common/PageTopContent";
-import { addToast, Card, useDisclosure } from "@heroui/react";
+import { addToast, useDisclosure } from "@heroui/react";
 import companyService from "../../api-services/companyService";
 import { useAtom } from "jotai";
 import { companyAtom } from "../../atoms/companyAtom";
@@ -39,17 +39,15 @@ function AdminCompanies() {
 
   return (
     <>
-      <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
-        <PageTopContent
-          title="Companies"
-          count={companyState?.count}
-          showEditMode
-          editMode={editMode}
-          setEditMode={setEditMode}
-          addNewButtonClick={onOpen}
-        />
-        <CompanyList editMode={editMode} />
-      </Card>
+      <PageTopContent
+        title="Companies"
+        count={companyState?.count}
+        showEditMode
+        editMode={editMode}
+        setEditMode={setEditMode}
+        addNewButtonClick={onOpen}
+      />
+      <CompanyList editMode={editMode} />
 
       <CustomModal
         isOpen={isOpen}

@@ -5,6 +5,11 @@ const medicineTypeService = {
     const response = await api.get(`/medicine-type?sort=${sort}&q=${q}`);
     return response;
   },
+
+  addNewMedicineType: async (data) => {
+    const response = await api.post("/medicine-type", data);
+    return response;
+  },
 };
 
 export default medicineTypeService;

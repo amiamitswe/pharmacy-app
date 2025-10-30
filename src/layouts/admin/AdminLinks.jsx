@@ -1,24 +1,11 @@
 import { NavLink } from "react-router";
-
-const links = [
-  // { id: 1, label: "Dashboard", to: "/admin" },
-  { id: 1, label: "Companies", to: "/admin/companies" },
-  { id: 2, label: "Products", to: "/admin/medicine" },
-  { id: 3, label: "Medicine Type", to: "/admin/medicine_type" },
-  { id: 4, label: "Categories", to: "/admin/medicine_categories" },
-  { id: 5, label: "Users", to: "/admin/users" },
-  { id: 6, label: "Settings", to: "/admin/settings" },
-  { id: 7, label: "Help", to: "/admin/help" },
-  { id: 8, label: "Contact", to: "/admin/contact" },
-  { id: 9, label: "About", to: "/admin/about" },
-  { id: 10, label: "Orders", to: "/admin/orders" },
-];
+import { adminLinks } from "../../routePaths";
 
 function AdminLinks({ onClose = () => {} }) {
   return (
     <div className="md:mt-8">
       <ul className="flex flex-col gap-2">
-        {links.map((link) => (
+        {adminLinks?.map((link) => (
           <li key={link.id}>
             <NavLink
               to={link.to}

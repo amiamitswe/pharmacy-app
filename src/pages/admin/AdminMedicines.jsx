@@ -17,6 +17,9 @@ function AdminMedicines() {
 
   useEffect(() => {
     const getAllMedicines = async () => {
+      setMedicines({
+        loading: true,
+      });
       try {
         const response = await medicineService.getList(currentPage, limit);
 
@@ -33,6 +36,11 @@ function AdminMedicines() {
           title: error.data.message || "Unable to fetch medicines",
           color: "danger",
         });
+      } finally {
+        setMedicines((pre) => ({
+          ...pre,
+          loading: false,
+        }));
       }
     };
 
@@ -41,15 +49,15 @@ function AdminMedicines() {
 
   return (
     <>
-      <Card className="p-4" shadow="sm">
-        <PageTopContent
-          title="Medicines"
-          count={medicineState?.count}
-          showEditMode
-          editMode={editMode}
-          setEditMode={setEditMode}
-          addNewButtonClick={onOpen}
-        />
+      <PageTopContent
+        title="Medicines"
+        count={medicineState?.count}
+        showEditMode
+        editMode={editMode}
+        setEditMode={setEditMode}
+        addNewButtonClick={onOpen}
+      />
+      <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
         <MedicineList editMode={editMode} />
         {medicineState?.count > 0 ? (
           <PaginationComponent

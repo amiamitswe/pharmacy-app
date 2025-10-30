@@ -6,13 +6,13 @@ const mCategoryService = {
     return response;
   },
 
-  // addNewCompany: async ({ company, country }) => {
-  //   const response = await api.post("/company", {
-  //     company,
-  //     country,
-  //   });
-  //   return response;
-  // },
+  addNewCategory: async ({ categoryName, details }) => {
+    const response = await api.post("/category", {
+      categoryName,
+      details,
+    });
+    return response;
+  },
 };
 
 export default mCategoryService;
