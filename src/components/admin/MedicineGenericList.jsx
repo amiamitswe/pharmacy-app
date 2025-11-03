@@ -29,9 +29,16 @@ function MedicineGenericList({ editMode }) {
               <div>
                 <p className="capitalize text-lg">{generic?.genericName}</p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {generic?.strength?.map((strength, index) => (
+                  <p className="text-sm">Strength: </p>{generic?.strength?.map((strength, index) => (
                     <Chip color="primary" variant="flat" key={index} size="md">
                       {strength}
+                    </Chip>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <p className="text-sm">Medicine Form: </p>{generic?.medicine_forms?.map((form, index) => (
+                    <Chip color="secondary" variant="flat" key={index} size="md" className="capitalize">
+                      {form}
                     </Chip>
                   ))}
                 </div>
