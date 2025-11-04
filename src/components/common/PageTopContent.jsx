@@ -11,6 +11,8 @@ function PageTopContent({
   editMode,
   setEditMode,
   addNewButtonClick = () => {},
+  search,
+  setSearch,
 }) {
   return (
     <div className="flex md:items-center flex-col md:flex-row justify-between mb-4 gap-4">
@@ -18,7 +20,14 @@ function PageTopContent({
         {title} {count ? `(${count})` : ""}
       </h1>
       <div className="flex items-center gap-4">
-        <Input placeholder="Search here ..." variant="bordered" startContent={<BiSearch />} />
+        <Input
+          placeholder="Search here ..."
+          variant="bordered"
+          startContent={<BiSearch />}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => setSearch("")}
+        />
         <Button
           color="success"
           variant="bordered"
@@ -37,8 +46,15 @@ function PageTopContent({
             onPress={() => setEditMode(!editMode)}
             isIconOnly
           >
-            {!editMode ? <BiEdit className="text-2xl" /> : <CgClose className="text-2xl" />}{" "}
-            <span className="hidden md:block ml-2"> {!editMode ? "Edit Mode" : "Close Edit"}</span>
+            {!editMode ? (
+              <BiEdit className="text-2xl" />
+            ) : (
+              <CgClose className="text-2xl" />
+            )}{" "}
+            <span className="hidden md:block ml-2">
+              {" "}
+              {!editMode ? "Edit Mode" : "Close Edit"}
+            </span>
           </Button>
         )}
       </div>

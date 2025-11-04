@@ -1,8 +1,24 @@
 import api from "./axios-config/axios";
 
 const medicineService = {
-  getList: async (page = 1, limit = 10) => {
-    const response = await api.get(`/medicine?page=${page}&limit=${limit}`);
+  getList: async (page = 1, limit = 10, q="") => {
+    const response = await api.get(`/medicine?page=${page}&limit=${limit}&q=${q}`);
+    return response;
+  },
+
+  uploadImages: async (formData) => {
+    const response = await api.post("/medicine/upload-image", formData, {
+      headers: {
+        // Let Axios auto-set the multipart boundary
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true, // ✅ important for cookie auth
+    });
+    return response;
+  },
+
+  saveMedicine: async (data) => {
+    const response = await api.post("/medicine", data);
     return response;
   },
 };

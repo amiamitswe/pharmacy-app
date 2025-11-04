@@ -15,6 +15,7 @@ function CustomModal({
   children,
   footerAction = null,
   isDismissable = true,
+  ...rest
 }) {
   return (
     <Modal
@@ -24,6 +25,7 @@ function CustomModal({
       classNames={{
         closeButton: "cursor-pointer",
       }}
+      {...rest}
     >
       <ModalContent>
         {(onClose) => (
