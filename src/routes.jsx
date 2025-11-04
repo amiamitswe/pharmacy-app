@@ -31,6 +31,7 @@ import AdminMedicineCategory from "./pages/admin/AdminMedicineCategory";
 import AdminMedicineType from "./pages/admin/AdminMedicineType";
 import AdminGeneric from "./pages/admin/AdminGeneric";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAddNewMedicine from "./pages/admin/AdminAddNewMedicine";
 
 const routes = [
   // 🌐 Public site — admin is redirected away, users are allowed
@@ -62,6 +63,7 @@ const routes = [
       { path: "companies", element: <AdminCompanies /> },
       { path: "medicine_categories", element: <AdminMedicineCategory /> },
       { path: "medicine", element: <AdminMedicines /> },
+      { path: "medicine/add_new", element: <AdminAddNewMedicine /> },
       { path: "medicine_type", element: <AdminMedicineType /> },
       { path: "medicine_generic", element: <AdminGeneric /> },
       { path: "users", element: <AdminUsers /> },

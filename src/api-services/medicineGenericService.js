@@ -2,7 +2,7 @@ import api from "./axios-config/axios";
 
 const medicineGenericService = {
   getList: async () => {
-    const response = await api.get("/generic");
+    const response = await api.get("/generic?limit=100");
     return response;
   },
 
