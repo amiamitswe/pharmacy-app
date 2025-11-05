@@ -8,6 +8,11 @@ const medicineService = {
     return response;
   },
 
+  getMedicineById: async (id) => {
+    const response = await api.get(`/medicine/${id}`);
+    return response;
+  },
+
   uploadImages: async (formData) => {
     const response = await api.post("/medicine/upload-image", formData, {
       headers: {
