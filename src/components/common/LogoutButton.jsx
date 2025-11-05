@@ -10,11 +10,6 @@ export default function LogoutButton() {
   async function handleLogout() {
     const res = await userService.logout();
 
-    document.cookie =
-      "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    document.cookie =
-      "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-
     localStorage.removeItem("accessToken");
 
     if (res.status === 200) {

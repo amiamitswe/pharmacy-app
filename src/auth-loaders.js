@@ -5,18 +5,17 @@ import userService from "./api-services/userService";
 import { addToast } from "@heroui/react";
 
 async function fetchUserFromServer() {
-  const cookie = document.cookie
-    .split("; ")
-    .find((r) => r.startsWith("user_role="));
-
-  if (!cookie && !localStorage.getItem("accessToken")) return null;
+  if (!localStorage.getItem("accessToken")) return null;
 
   const response = await userService.profile();
   if (response.status === 200) {
+    
     return {
       name: response.data.user.name,
       role: response.data.user.role,
       loggedIn: true,
+      cartItemCount: response.data.user.cartItemCount || 0,
+      cartItems: response.data.cartItems || [],
     };
   } else {
     return null;
@@ -31,8 +30,12 @@ async function getUser() {
     // Run the "API" call only once
     if (!auth?.initialized) {
       const user = await fetchUserFromServer();
+
       if (user) {
-        store.set(authAtom, { ...user, initialized: true });
+        store.set(authAtom, {
+          ...user,
+          initialized: true,
+        });
         return user;
       }
       store.set(authAtom, {
@@ -51,11 +54,6 @@ async function getUser() {
       color: "danger",
     });
     if (error.status === 403) {
-      document.cookie =
-        "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      document.cookie =
-        "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-
       localStorage.removeItem("accessToken");
 
       throw redirect("/login");

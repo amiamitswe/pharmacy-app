@@ -19,7 +19,6 @@ const medicineService = {
         // Let Axios auto-set the multipart boundary
         "Content-Type": "multipart/form-data",
       },
-      withCredentials: true, // ✅ important for cookie auth
     });
     return response;
   },
