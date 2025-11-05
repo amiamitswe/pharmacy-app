@@ -1,21 +1,54 @@
-import { Button, Card, CardBody, CardFooter, Image } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Image,
+} from "@heroui/react";
 import { useAtom } from "jotai";
 import React from "react";
 import { FaCartPlus } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
 import { authAtom } from "../../../atoms/authAtom";
+import { addToCartService } from "../../../api-services";
 
 function MedicineItem({ data }) {
   const navigate = useNavigate();
-  const [user] = useAtom(authAtom);
+  const [user, setAuth] = useAtom(authAtom);
 
-  const onAddToCardHandler = () => {
-    console.log(user);
+  const onAddToCardHandler = async () => {
     if (!user?.loggedIn) {
       console.log("here need to navigate");
       navigate(`/login?fallback_url=/medicine/${data?._id}`);
     } else {
       console.log("Here will be logic for handle add to card");
+
+      try {
+        const response = await addToCartService.addToCard({
+          medicineId: data?._id,
+          quantity: data?.minOrder,
+        });
+
+        if (response.status === 200) {
+          addToast({
+            title: "Item added to cart",
+            color: "success",
+          });
+          setAuth((pre) => ({
+            ...pre,
+            cartItemCount: pre.cartItemCount + 1,
+          }));
+        }
+      } catch (error) {
+        addToast({
+          title:
+            error?.data?.error ||
+            error?.data?.message ||
+            "Something went wrong",
+          color: "danger",
+        });
+      }
     }
   };
 
@@ -60,15 +93,26 @@ function MedicineItem({ data }) {
           </div>
         </Link>
 
-        <Button
-          className="z-20"
-          fullWidth
-          endContent={<FaCartPlus className="h-5 w-5" />}
-          // ⬇️ use onPress for HeroUI Button
-          onPress={onAddToCardHandler}
-        >
-          Add to Cart
-        </Button>
+        {data?.availableStatus ? (
+          user?.cartItems?.some((item) => item === data?._id) ? (
+            <Button fullWidth isDisabled color="primary" variant="flat">
+              Already in cart
+            </Button>
+          ) : (
+            <Button
+              className="z-20"
+              fullWidth
+              endContent={<FaCartPlus className="h-5 w-5" />}
+              onPress={onAddToCardHandler}
+            >
+              Add to Cart
+            </Button>
+          )
+        ) : (
+          <Button fullWidth isDisabled>
+            Not available
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

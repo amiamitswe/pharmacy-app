@@ -22,7 +22,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [searchParams] = useSearchParams();
-const fallback_url = searchParams.get("fallback_url");
+  const fallback_url = searchParams.get("fallback_url");
 
   const loginHandler = async (values) => {
     setIsLoading(true);
@@ -31,15 +31,7 @@ const fallback_url = searchParams.get("fallback_url");
 
       if (response?.status === 200 && response?.data?.["access-token"]) {
         const role = response.data.user.role;
-
-        if (import.meta.env.VITE_ENVIRONMENT === "prod") {
-          // // Set cookie
-          document.cookie = `user_role=${role}; path=/; max-age=86400`;
-          // document.cookie = `access_token=${token}; path=/; max-age=86400`;
-          // // access_token will set by server
-        } else {
-          localStorage.setItem("accessToken", response.data["access-token"]);
-        }
+        localStorage.setItem("accessToken", response.data["access-token"]);
 
         // Update Jotai (this triggers AuthWatcher)
         setAuth({
@@ -47,11 +39,15 @@ const fallback_url = searchParams.get("fallback_url");
           loggedIn: true,
           role,
           name: response?.data?.user?.name,
+          cartItemCount: response?.data?.user?.cartItemCount || 0,
+          cartItems: response?.data?.cartItems || [],
         });
 
         // Small delay before redirect ensures Jotai update propagates
         setTimeout(() => {
-          navigate(role === "admin" ? "/admin" : fallback_url || "/user", { replace: true });
+          navigate(role === "admin" ? "/admin" : fallback_url || "/user", {
+            replace: true,
+          });
         }, 100);
 
         addToast({

@@ -6,4 +6,6 @@ export const authAtom = atom({
   loggedIn: false,
   role: null, // "admin" | "user" | null
   name: null,
+  cartItemCount: 0,
+  cartItems: []
 });

@@ -8,12 +8,14 @@ import {
   NavbarContent,
   NavbarItem,
   Button,
+  Badge,
 } from "@heroui/react";
 import { ThemeSwitcher } from "../common/ThemeSwitcher";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAtom } from "jotai";
 import { authAtom } from "../../atoms/authAtom";
 import LogoutButton from "../common/LogoutButton";
+import { FaCartPlus, FaUser } from "react-icons/fa";
 
 export const AcmeLogo = () => {
   return (
@@ -29,8 +31,12 @@ export const AcmeLogo = () => {
 };
 
 export default function CustomNavbar() {
+  const navigation = useNavigate();
   const [user] = useAtom(authAtom);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  console.log({user});
+  
 
   const menuItems = [
     "Profile",
@@ -86,7 +92,34 @@ export default function CustomNavbar() {
               </Link>
             </NavbarItem>
           </>
-        ) : <LogoutButton />}
+        ) : (
+          <>
+            <Button
+              isIconOnly
+              aria-label="Cart item"
+              color="primary"
+              variant="bordered"
+              radius="full"
+              className="border-default-200 border-1"
+              onPress={() => navigation("/user")}
+            >
+              <FaUser size={20} />
+            </Button>
+            <Badge color="danger" content={user?.cartItemCount} shape="circle">
+              <Button
+                isIconOnly
+                aria-label="Cart item"
+                color="primary"
+                variant="bordered"
+                radius="full"
+                className="border-default-200 border-1"
+              >
+                <FaCartPlus size={20} />
+              </Button>
+            </Badge>
+            <LogoutButton />
+          </>
+        )}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden" justify="end">

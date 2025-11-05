@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, CardBody, Chip, Divider, Image } from "@heroui/react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import PageHeader from "../../components/common/PageHeader";
 import { FaCartPlus } from "react-icons/fa";
 import { medicineService } from "../../api-services";
+import { useAtom } from "jotai";
+import { authAtom } from "../../atoms/authAtom";
+
 
 export default function MedicineDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [user] = useAtom(authAtom);
   const [qty, setQty] = React.useState(1);
   const [data, setData] = useState({});
 
@@ -23,7 +28,14 @@ export default function MedicineDetails() {
   const dec = () => setQty((q) => Math.max(1, q - 1));
   const inc = () => setQty((q) => Math.min(99, q + 1));
 
-  const onAddToCart = (qty) => console.log("Add to cart", { qty });
+  const onAddToCart = (qty) => {
+    if (!user?.loggedIn) {
+      console.log("here need to navigate");
+      navigate(`/login?fallback_url=/medicine/${data?._id}`);
+    } else {
+      console.log("Here will be logic for handle add to card", { qty });
+    }
+  };
 
   return (
     <>
@@ -63,10 +75,10 @@ export default function MedicineDetails() {
                   <p className="text-xl">
                     Price:{" "}
                     <span className="font-normal line-through text-gray-500 text-lg">
-                      {data.originalPrice} BDT
+                      {data?.originalPrice?.toFixed(2)} BDT
                     </span>{" "}
                     <span className="font-bold text-green-500">
-                      {data.discountPrice} BDT
+                      {data?.discountPrice?.toFixed(2)} BDT
                     </span>
                   </p>
                   <Chip>

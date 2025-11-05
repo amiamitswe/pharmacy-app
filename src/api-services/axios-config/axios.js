@@ -10,7 +10,7 @@ const api = axios.create({
     "Cache-Control": "no-store", // hint
     Pragma: "no-cache",
   },
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 const PUBLIC_ENDPOINTS = [
@@ -26,13 +26,10 @@ api.interceptors.request.use(
       config.url && PUBLIC_ENDPOINTS.some((url) => config.url.startsWith(url));
 
     if (!isPublic) {
-      const token =
-        import.meta.env.VITE_ENVIRONMENT !== "prod" &&
-        localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      // ✅ Cookies automatically sent because withCredentials=true
     }
     return config;
   },
