@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
@@ -23,8 +23,10 @@ const SignupSchema = Yup.object().shape({
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const signUpHandler = async (values, { setErrors }) => {
+    setLoading(true);
     try {
       const response = await userService.signup(
         values.fullName,
@@ -48,6 +50,7 @@ const Signup = () => {
           title: response?.data?.message || "Something went wrong",
           color: "danger",
         });
+        setLoading(false);
       }
     } catch (e) {
       if (e?.data?.error) {
@@ -58,6 +61,7 @@ const Signup = () => {
         title: e?.data?.message || e?.message || "Something went wrong",
         color: "danger",
       });
+      setLoading(false);
     }
   };
 
@@ -75,17 +79,15 @@ const Signup = () => {
               password: "Aadfsadf1",
             }}
             validationSchema={SignupSchema}
-            onSubmit={(values, { setSubmitting, setErrors }) => {
-              signUpHandler(values, { setErrors });
-              setSubmitting(false);
-            }}
+            onSubmit={(values, { setErrors }) =>
+              signUpHandler(values, { setErrors })
+            }
           >
             {({
               values,
               errors,
               touched,
               handleSubmit,
-              isSubmitting,
               setFieldValue,
               setFieldTouched,
             }) => (
@@ -149,7 +151,7 @@ const Signup = () => {
                   <Button
                     color="primary"
                     type="submit"
-                    disabled={isSubmitting}
+                    isLoading={loading}
                     className="w-full"
                   >
                     Sign Up
