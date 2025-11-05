@@ -11,6 +11,7 @@ const adminLinks = [
   { id: 8, label: "Contact", to: "/admin/contact" },
   { id: 9, label: "About", to: "/admin/about" },
   { id: 10, label: "Orders", to: "/admin/orders" },
+  { id: 11, label: "Editor", to: "/admin/editor" },
 ];
 
 export { adminLinks };

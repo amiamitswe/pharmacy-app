@@ -33,6 +33,7 @@ import AdminGeneric from "./pages/admin/AdminGeneric";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAddNewMedicine from "./pages/admin/AdminAddNewMedicine";
 import MedicineDetails from "./pages/medicine/MedicineDetails";
+import AdminEditor from "./pages/admin/AdminEditor";
 
 const routes = [
   // 🌐 Public site — admin is redirected away, users are allowed
@@ -69,6 +70,7 @@ const routes = [
       { path: "medicine_type", element: <AdminMedicineType /> },
       { path: "medicine_generic", element: <AdminGeneric /> },
       { path: "users", element: <AdminUsers /> },
+      { path: "editor", element: <AdminEditor /> },
       { path: "*", element: <AdminNotFound /> },
     ],
   },
