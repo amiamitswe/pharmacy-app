@@ -1,8 +1,15 @@
 import api from "./axios-config/axios";
 
 const medicineService = {
-  getList: async (page = 1, limit = 10, q="") => {
-    const response = await api.get(`/medicine?page=${page}&limit=${limit}&q=${q}`);
+  getList: async ({ page = 1, limit = 10, q = "" }) => {
+    const response = await api.get(
+      `/medicine?page=${page}&limit=${limit}&q=${q}`
+    );
+    return response;
+  },
+
+  getMedicineById: async (id) => {
+    const response = await api.get(`/medicine/${id}`);
     return response;
   },
 

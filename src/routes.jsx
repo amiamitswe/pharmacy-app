@@ -32,6 +32,7 @@ import AdminMedicineType from "./pages/admin/AdminMedicineType";
 import AdminGeneric from "./pages/admin/AdminGeneric";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAddNewMedicine from "./pages/admin/AdminAddNewMedicine";
+import MedicineDetails from "./pages/medicine/MedicineDetails";
 
 const routes = [
   // 🌐 Public site — admin is redirected away, users are allowed
@@ -41,6 +42,7 @@ const routes = [
     loader: publicGate, // admin -> /admin, user or anon -> stay here
     children: [
       { index: true, element: <Home /> },
+      { path: "medicine/:id", element: <MedicineDetails /> },
       { path: "about", element: <PublicAbout /> },
 
       // 🔐 Login page — if already authed, bounce them appropriately

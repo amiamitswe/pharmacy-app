@@ -1,10 +1,11 @@
 import { useSetAtom } from "jotai";
 import { authAtom } from "../../atoms/authAtom";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import * as Yup from "yup";
 import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
 import { Formik } from "formik";
 import userService from "../../api-services/userService";
+import { useState } from "react";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -18,8 +19,13 @@ const LoginSchema = Yup.object().shape({
 export default function Login() {
   const setAuth = useSetAtom(authAtom);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [searchParams] = useSearchParams();
+const fallback_url = searchParams.get("fallback_url");
 
   const loginHandler = async (values) => {
+    setIsLoading(true);
     try {
       const response = await userService.login(values.email, values.password);
 
@@ -45,7 +51,7 @@ export default function Login() {
 
         // Small delay before redirect ensures Jotai update propagates
         setTimeout(() => {
-          navigate(role === "admin" ? "/admin" : "/user", { replace: true });
+          navigate(role === "admin" ? "/admin" : fallback_url || "/user", { replace: true });
         }, 100);
 
         addToast({
@@ -60,6 +66,7 @@ export default function Login() {
             "Something went wrong",
           color: "danger",
         });
+        setIsLoading(false);
       }
     } catch (e) {
       addToast({
@@ -70,6 +77,7 @@ export default function Login() {
           "Something went wrong",
         color: "danger",
       });
+      setIsLoading(false);
     }
   };
 
@@ -85,17 +93,13 @@ export default function Login() {
               password: "Password123",
             }}
             validationSchema={LoginSchema}
-            onSubmit={(values, { setSubmitting }) => {
-              loginHandler(values);
-              setSubmitting(false);
-            }}
+            onSubmit={(values) => loginHandler(values)}
           >
             {({
               values,
               errors,
               touched,
               handleSubmit,
-              isSubmitting,
               setFieldValue,
               setFieldTouched,
             }) => (
@@ -132,7 +136,7 @@ export default function Login() {
                   <Button
                     color="primary"
                     type="submit"
-                    disabled={isSubmitting}
+                    isLoading={isLoading}
                     className="w-full"
                   >
                     Login

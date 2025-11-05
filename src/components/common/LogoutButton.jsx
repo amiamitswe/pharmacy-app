@@ -8,6 +8,8 @@ export default function LogoutButton() {
   const setAuth = useSetAtom(authAtom);
 
   async function handleLogout() {
+    const res = await userService.logout();
+
     document.cookie =
       "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     document.cookie =
@@ -15,7 +17,6 @@ export default function LogoutButton() {
 
     localStorage.removeItem("accessToken");
 
-    const res = await userService.logout();
     if (res.status === 200) {
       setAuth({
         initialized: true,
