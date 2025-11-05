@@ -1,15 +1,13 @@
-import { useAtom } from "jotai";
-import { Link } from "react-router";
-import { authAtom } from "../atoms/authAtom";
+import HomeMedicineList from "../components/home/HomeMedicineList";
+// import HeroSection from "../components/home/HeroSection";
 
 export default function Home() {
-  const [user] = useAtom(authAtom);
   return (
     <div>
-      <h1>🏠 Public Home Page</h1>
-      <p>Anyone can see this page (except admins after login)</p>
-      <Link to="/about">About</Link>{" "}
-      {!user?.loggedIn && <Link to="/login">| Login</Link>}
+      {/* <HeroSection /> */}
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-130px)] flex flex-col justify-between">
+        <HomeMedicineList />
+      </div>
     </div>
   );
 }
