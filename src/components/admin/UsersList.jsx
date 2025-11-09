@@ -8,6 +8,10 @@ function UsersList({ editMode }) {
   const [usersState] = useAtom(usersAtom);
   return (
     <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
+        {!usersState?.users?.length && !usersState?.loading ? (
+        <p>No Users found</p>
+      ) : (
+    
       <div className="grid grid-cols-2 gap-4">
         {usersState?.users?.map((user, index) => (
           <div
@@ -54,7 +58,7 @@ function UsersList({ editMode }) {
             )}
           </div>
         ))}
-      </div>
+      </div>)}
     </Card>
   );
 }

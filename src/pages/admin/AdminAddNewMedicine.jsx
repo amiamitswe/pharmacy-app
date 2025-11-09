@@ -14,9 +14,10 @@ import {
   companyService,
   medicineGenericService,
   medicineService,
-  medicineTypeService,
+  medicineFormService,
 } from "../../api-services";
 import { useNavigate } from "react-router";
+import { FaArrowLeft } from "react-icons/fa";
 
 /** ------------ VALIDATION ------------------ **/
 const Schema = Yup.object({
@@ -32,6 +33,8 @@ const Schema = Yup.object({
   description: Yup.string().trim().required("Required"),
   company: Yup.string().required("Required"),
   form: Yup.string().required("Required"),
+  unitInfo: Yup.string().trim().required("Required"),
+  orderUnit: Yup.string().required("Required"),
   generics_and_strengths: Yup.array()
     .of(
       Yup.object({
@@ -60,16 +63,16 @@ function AdminAddNewMedicine({
     company: "",
     form: "",
     category: "", // add if you later want category
+    unitInfo: "",
+    orderUnit: "",
   },
 }) {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [singleFile, setSingleFile] = useState(null);
   const [multiFiles, setMultiFiles] = useState([]);
   const [companyList, setCompanyList] = useState([]);
   const [medicineFormList, setMedicineFormList] = useState([]);
   const [medicineGenericList, setMedicineGenericList] = useState([]);
-
 
   async function uploadImages({ singleFile, multiFiles }) {
     const fd = new FormData();
@@ -113,7 +116,7 @@ function AdminAddNewMedicine({
   useEffect(() => {
     const fetchMedicineFormList = async () => {
       try {
-        const response = await medicineTypeService.getList();
+        const response = await medicineFormService.getList();
         setMedicineFormList(response?.data?.result || []);
       } catch {
         setMedicineFormList([]);
@@ -142,7 +145,8 @@ function AdminAddNewMedicine({
         enableReinitialize={false}
         validateOnChange
         validateOnBlur
-        onSubmit={async (values, { setSubmitting, resetForm }) => {
+        // onSubmit={async (values, { setSubmitting, resetForm }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           try {
             // 1) upload images first if any
             let uploaded = null;
@@ -155,7 +159,7 @@ function AdminAddNewMedicine({
             // 2) build final payload
             const payload = {
               ...values,
-              type: values.form,
+              medicine_form: values.form,
               originalPrice: Number(values.originalPrice),
               discount: Number(values.discount),
               medicineCount: Number(values.medicineCount),
@@ -173,8 +177,8 @@ function AdminAddNewMedicine({
                 description: "Saved successfully",
                 color: "success",
               });
-              resetForm();
-              navigate("/admin/medicine");
+              // resetForm();
+              // navigate("/admin/medicine");
             } else {
               throw new Error(result.data.message);
             }
@@ -345,11 +349,11 @@ function AdminAddNewMedicine({
                         }
                         className="w-full text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-default-100 file:text-default-700 hover:file:bg-default-200"
                       />
-                      {singleFile && (
+                      {/* {singleFile && (
                         <p className="text-xs text-default-500 mt-2 truncate">
                           {singleFile.name}
                         </p>
-                      )}
+                      )} */}
                     </div>
 
                     <div className="rounded-lg border border-default-200 dark:border-default-100 p-3">
@@ -363,11 +367,11 @@ function AdminAddNewMedicine({
                         onChange={(e) => setMultiFiles(e.target.files || [])}
                         className="w-full text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-default-100 file:text-default-700 hover:file:bg-default-200"
                       />
-                      {multiFiles.length > 0 && (
+                      {/* {multiFiles.length > 0 && (
                         <p className="text-xs text-default-500 mt-2">
                           {multiFiles.length} file(s) selected
                         </p>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
@@ -424,10 +428,16 @@ function AdminAddNewMedicine({
                           errorMessage={showErr("form") && errors.form}
                           size="md"
                           placeholder="Select a medicine form"
+                          classNames={{
+                            trigger: "capitalize",
+                          }}
                         >
                           {medicineFormList.map((opt) => (
-                            <SelectItem key={String(opt._id)}>
-                              {opt.medicineType}
+                            <SelectItem
+                              key={String(opt._id)}
+                              className="capitalize"
+                            >
+                              {opt.medicineForm}
                             </SelectItem>
                           ))}
                         </Select>
@@ -435,25 +445,53 @@ function AdminAddNewMedicine({
                     </Field>
                   </div>
 
-                  {/* Description */}
-                  <Field name="description">
+                  {/* Order Unit */}
+                  <Field name="orderUnit">
                     {() => (
-                      <Textarea
-                        label="Description"
-                        minRows={6}
-                        value={values.description}
-                        onValueChange={(val) =>
-                          setFieldValue("description", val)
+                      <Select
+                        label="Order Unit"
+                        selectedKeys={
+                          values.orderUnit
+                            ? new Set([String(values.orderUnit)])
+                            : new Set()
                         }
-                        onBlur={() =>
-                          setFieldTouched("description", true, true)
-                        }
-                        isInvalid={showErr("description")}
-                        errorMessage={
-                          showErr("description") && errors.description
-                        }
+                        onSelectionChange={(keys) => {
+                          const selectedUnit = Array.from(keys)[0];
+                          setFieldValue("orderUnit", selectedUnit || "");
+                          setFieldTouched("orderUnit", true, true);
+                          validateField("orderUnit");
+                        }}
+                        isInvalid={showErr("orderUnit")}
+                        errorMessage={showErr("orderUnit") && errors.orderUnit}
                         size="md"
+                        placeholder="Select an order unit"
+                        classNames={{
+                          trigger: "capitalize",
+                        }}
+                      >
+                        {["pic", "box", "strip", "bottle", "packet"].map(
+                          (item) => (
+                            <SelectItem key={item} className="capitalize">
+                              {item}
+                            </SelectItem>
+                          )
+                        )}
+                      </Select>
+                    )}
+                  </Field>
+
+                  {/* Unit Info */}
+                  <Field name="unitInfo">
+                    {() => (
+                      <Input
+                        label="Unit Info"
+                        value={values.unitInfo}
+                        onValueChange={(val) => setFieldValue("unitInfo", val)}
+                        onBlur={() => setFieldTouched("unitInfo", true, true)}
+                        isInvalid={showErr("unitInfo")}
+                        errorMessage={showErr("unitInfo") && errors.unitInfo}
                         className="w-full"
+                        size="md"
                       />
                     )}
                   </Field>
@@ -476,6 +514,23 @@ function AdminAddNewMedicine({
                   </Field>
                 </div>
               </div>
+
+              {/* Description */}
+              <Field name="description">
+                {() => (
+                  <Textarea
+                    label="Description"
+                    minRows={6}
+                    value={values.description}
+                    onValueChange={(val) => setFieldValue("description", val)}
+                    onBlur={() => setFieldTouched("description", true, true)}
+                    isInvalid={showErr("description")}
+                    errorMessage={showErr("description") && errors.description}
+                    size="md"
+                    className="w-full"
+                  />
+                )}
+              </Field>
 
               {/* Generics & Strengths */}
               <div className="w-full">
@@ -641,25 +696,37 @@ function AdminAddNewMedicine({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-default-200 dark:border-default-100">
+              <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 pt-4 border-t border-default-200 dark:border-default-100">
                 <Button
-                  type="reset"
+                  type="button"
                   variant="flat"
                   size="md"
                   className="w-full sm:w-auto"
+                  startContent={<FaArrowLeft />}
+                  onPress={() => navigate("/admin/medicine")}
                 >
-                  Reset
+                  Back
                 </Button>
+                <div className="flex gap-4">
+                  <Button
+                    type="reset"
+                    variant="flat"
+                    size="md"
+                    className="w-full sm:w-auto"
+                  >
+                    Reset
+                  </Button>
 
-                <Button
-                  type="submit"
-                  color="primary"
-                  isLoading={isSubmitting}
-                  size="md"
-                  className="w-full sm:w-auto"
-                >
-                  Save Medicine
-                </Button>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    isLoading={isSubmitting}
+                    size="md"
+                    className="w-full sm:w-auto"
+                  >
+                    Save Medicine
+                  </Button>
+                </div>
               </div>
             </Form>
           );

@@ -28,7 +28,7 @@ import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import AdminMedicineCategory from "./pages/admin/AdminMedicineCategory";
-import AdminMedicineType from "./pages/admin/AdminMedicineType";
+import AdminMedicineForm from "./pages/admin/AdminMedicineForm";
 import AdminGeneric from "./pages/admin/AdminGeneric";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAddNewMedicine from "./pages/admin/AdminAddNewMedicine";
@@ -67,7 +67,7 @@ const routes = [
       { path: "medicine_categories", element: <AdminMedicineCategory /> },
       { path: "medicine", element: <AdminMedicines /> },
       { path: "medicine/add_new", element: <AdminAddNewMedicine /> },
-      { path: "medicine_type", element: <AdminMedicineType /> },
+      { path: "medicine_form", element: <AdminMedicineForm /> },
       { path: "medicine_generic", element: <AdminGeneric /> },
       { path: "users", element: <AdminUsers /> },
       { path: "editor", element: <AdminEditor /> },

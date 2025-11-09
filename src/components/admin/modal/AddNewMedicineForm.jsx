@@ -2,35 +2,35 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Input, Button, addToast, Switch } from "@heroui/react";
-import { medicineTypeService } from "../../../api-services";
+import { medicineFormService } from "../../../api-services";
 import { useSetAtom } from "jotai";
-import { medicineTypeAtom } from "../../../atoms/medicineTypeAtom";
+import { medicineFormAtom } from "../../../atoms/medicineFormAtom";
 
 const validationSchema = Yup.object({
-  medicineType: Yup.string()
+  medicineForm: Yup.string()
     .trim()
     .min(2, "Too short")
-    .required("Medicine type is required"),
+    .required("Medicine form is required"),
 });
 
-function AddNewMedicineType({ closeModal }) {
-  const setMedicineTypes = useSetAtom(medicineTypeAtom);
+function AddNewMedicineForm({ closeModal }) {
+  const setMedicineTypes = useSetAtom(medicineFormAtom);
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       // Send trimmed value to API
-      const payload = { ...values, medicineType: values.medicineType.trim() };
-      const response = await medicineTypeService.addNewMedicineType(payload);
+      const payload = { ...values, medicineForm: values.medicineForm.trim() };
+      const response = await medicineFormService.addNewMedicineType(payload);
 
       if (response?.status === 201) {
         addToast({
-          title: "Medicine type added successfully",
+          title: "Medicine form added successfully",
           color: "success",
         });
 
         setMedicineTypes((pre) => ({
           ...pre,
-          medicineTypes: [...(pre?.medicineTypes || []), payload],
+          medicineForms: [...(pre?.medicineForms || []), payload],
           count: (pre?.count || 0) + 1,
         }));
       }
@@ -40,9 +40,9 @@ function AddNewMedicineType({ closeModal }) {
     } catch (error) {
       addToast({
         title:
-          error?.data?.error?.medicineType ||
+          error?.data?.error?.medicineForm ||
           error?.data?.message ||
-          "Unable to add medicine type",
+          "Unable to add medicine form",
         color: "danger",
       });
     } finally {
@@ -52,7 +52,7 @@ function AddNewMedicineType({ closeModal }) {
 
   return (
     <Formik
-      initialValues={{ medicineType: "", active: false }}
+      initialValues={{ medicineForm: "", active: false }}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
@@ -60,14 +60,14 @@ function AddNewMedicineType({ closeModal }) {
         <Form className="flex flex-col gap-4">
           <div>
             <Field
-              name="medicineType"
+              name="medicineForm"
               as={Input}
-              label="Medicine Type"
-              placeholder="Enter medicine type"
+              label="Medicine Form"
+              placeholder="Enter medicine form"
               fullWidth
             />
             <ErrorMessage
-              name="medicineType"
+              name="medicineForm"
               component="div"
               className="text-red-500 text-sm mt-1"
             />
@@ -75,7 +75,7 @@ function AddNewMedicineType({ closeModal }) {
 
           <div className="flex items-center justify-between">
             <span className="text-sm opacity-80">
-              Type Status {values.active ? "Active" : "Inactive"}
+              Form Status {values.active ? "Active" : "Inactive"}
             </span>
             <Switch
               isSelected={values.active}
@@ -100,4 +100,4 @@ function AddNewMedicineType({ closeModal }) {
   );
 }
 
-export default AddNewMedicineType;
+export default AddNewMedicineForm;

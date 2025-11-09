@@ -2,7 +2,7 @@ const adminLinks = [
   // { id: 1, label: "Dashboard", to: "/admin" },
   { id: 1, label: "Companies", to: "/admin/companies" },
   { id: 2, label: "Medicines", to: "/admin/medicine" },
-  { id: 3, label: "Medicine Type", to: "/admin/medicine_type" },
+  { id: 3, label: "Medicine Form", to: "/admin/medicine_form" },
   { id: 4, label: "Categories", to: "/admin/medicine_categories" },
   { id: 41, label: "Generic", to: "/admin/medicine_generic" },
   { id: 5, label: "Users", to: "/admin/users" },

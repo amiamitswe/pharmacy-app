@@ -1,7 +1,7 @@
 import companyService from "./companyService";
 import mCategoryService from "./mCategoryService";
 import medicineService from "./medicineService";
-import medicineTypeService from "./medicineTypeService";
+import medicineFormService from "./medicineFormService";
 import userService from "./userService";
 import medicineGenericService from "./medicineGenericService";
 import addToCartService from "./addToCartService";
@@ -11,7 +11,7 @@ export {
   medicineService,
   userService,
   companyService,
-  medicineTypeService,
+  medicineFormService,
   medicineGenericService,
   addToCartService,
 };
