@@ -1,6 +1,6 @@
 import api from "./axios-config/axios";
 
-const medicineTypeService = {
+const medicineFormService = {
   getList: async (sort = "medicineType", q = "") => {
     const response = await api.get(`/medicine-type?sort=${sort}&q=${q}`);
     return response;
@@ -12,4 +12,4 @@ const medicineTypeService = {
   },
 };
 
-export default medicineTypeService;
+export default medicineFormService;

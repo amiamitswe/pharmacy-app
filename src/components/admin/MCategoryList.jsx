@@ -8,6 +8,9 @@ function MCategoryList({ editMode }) {
 
   return (
     <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
+        {!mCategoryState?.categories?.length && !mCategoryState?.loading ? (
+        <p>No category found</p>
+      ) :
       <div className="grid grid-cols-2 gap-4">
         {mCategoryState?.categories?.map((category, index) => (
           <div
@@ -31,7 +34,7 @@ function MCategoryList({ editMode }) {
             )}
           </div>
         ))}
-      </div>
+      </div>}
     </Card>
   );
 }

@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 
-export const medicineTypeAtom = atom({
-  medicineTypes: [],
+export const medicineFormAtom = atom({
+  medicineForms: [],
   loading: false,
   error: null,
   count: 0,

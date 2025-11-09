@@ -5,11 +5,11 @@ import { Input, Button, addToast, Select, SelectItem } from "@heroui/react";
 import TagInput from "../../common/TagInput";
 import {
   medicineGenericService,
-  medicineTypeService,
+  medicineFormService,
 } from "../../../api-services";
 import { useAtom, useSetAtom } from "jotai";
 import { medicineGenericAtom } from "../../../atoms/medicineGenericAtom";
-import { medicineTypeAtom } from "../../../atoms/medicineTypeAtom";
+import { medicineFormAtom } from "../../../atoms/medicineFormAtom";
 
 const validationSchema = Yup.object({
   genericName: Yup.string()
@@ -35,18 +35,18 @@ const validationSchema = Yup.object({
 
 function AddNewGeneric({ closeModal }) {
   const setMGenerics = useSetAtom(medicineGenericAtom);
-  const [medicineTypesState, setMedicineTypesState] = useAtom(medicineTypeAtom);
+  const [medicineTypesState, setMedicineTypesState] = useAtom(medicineFormAtom);
   const [loadingTypes, setLoadingTypes] = useState(false);
 
   useEffect(() => {
     const fetchMedicineTypes = async () => {
       try {
         setLoadingTypes(true);
-        const response = await medicineTypeService.getList();
+        const response = await medicineFormService.getList();
         if (response?.status === 200) {
           setMedicineTypesState((pre) => ({
             ...pre,
-            medicineTypes: response?.data?.result,
+            medicineForms: response?.data?.result,
             loading: false,
             error: null,
             count: response?.data?.dataCount,
@@ -54,7 +54,7 @@ function AddNewGeneric({ closeModal }) {
         }
       } catch (error) {
         addToast({
-          title: error?.data?.message || "Failed to fetch medicine types",
+          title: error?.data?.message || "Failed to fetch medicine forms",
           color: "danger",
         });
       } finally {
@@ -62,7 +62,7 @@ function AddNewGeneric({ closeModal }) {
       }
     };
 
-    if (medicineTypesState?.medicineTypes?.length === 0) {
+    if (medicineTypesState?.medicineForms?.length === 0) {
       fetchMedicineTypes();
     }
   }, []);
@@ -147,8 +147,8 @@ function AddNewGeneric({ closeModal }) {
 
           <div>
             <Select
-              label="Medicine Type"
-              placeholder="Select medicine types"
+              label="Medicine Forms"
+              placeholder="Select medicine Forms"
               selectedKeys={values.medicine_forms}
               selectionMode="multiple"
               onSelectionChange={(keys) => {
@@ -156,10 +156,13 @@ function AddNewGeneric({ closeModal }) {
               }}
               isLoading={loadingTypes}
               fullWidth
+              classNames={{
+                trigger: "capitalize",
+              }}
             >
-              {medicineTypesState.medicineTypes.map((type) => (
-                <SelectItem key={type.medicineType}>
-                  {type.medicineType}
+              {medicineTypesState.medicineForms.map((type) => (
+                <SelectItem key={type.medicineForm} className="capitalize">
+                  {type.medicineForm}
                 </SelectItem>
               ))}
             </Select>

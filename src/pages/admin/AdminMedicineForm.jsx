@@ -4,24 +4,24 @@ import PageTopContent from "../../components/common/PageTopContent";
 import { addToast, Card, useDisclosure } from "@heroui/react";
 import { useAtom } from "jotai";
 import CustomModal from "../../components/common/modal/CustomModal";
-import MedicineTypeList from "../../components/admin/MedicineTypeList";
-import { medicineTypeAtom } from "../../atoms/medicineTypeAtom";
-import { medicineTypeService } from "../../api-services";
-import AddNewMedicineType from "../../components/admin/modal/AddNewMedicineType";
+import MedicineFormList from "../../components/admin/MedicineFormList";
+import { medicineFormAtom } from "../../atoms/medicineFormAtom";
+import { medicineFormService } from "../../api-services";
+import AddNewMedicineForm from "../../components/admin/modal/AddNewMedicineForm";
 
-function AdminMedicineType() {
+function AdminMedicineForm() {
   const [editMode, setEditMode] = useState(false);
-  const [medicineTypeState, setMedicineTypeState] = useAtom(medicineTypeAtom);
+  const [medicineTypeState, setMedicineTypeState] = useAtom(medicineFormAtom);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     const getAllMedicineTypes = async () => {
       try {
-        const response = await medicineTypeService.getList();
+        const response = await medicineFormService.getList();
 
         if (response.status === 200) {
           setMedicineTypeState({
-            medicineTypes: response?.data?.result || [],
+            medicineForms: response?.data?.result || [],
             loading: false,
             error: null,
             count: response?.data?.dataCount || 0,
@@ -29,7 +29,7 @@ function AdminMedicineType() {
         }
       } catch (error) {
         addToast({
-          title: error.data.message || "Unable to fetch medicine types",
+          title: error.data.message || "Unable to fetch medicine forms",
           color: "danger",
         });
       }
@@ -41,25 +41,25 @@ function AdminMedicineType() {
   return (
     <>
       <PageTopContent
-        title="Medicine Type"
+        title="Medicine Forms"
         count={medicineTypeState?.count}
         showEditMode
         editMode={editMode}
         setEditMode={setEditMode}
         addNewButtonClick={onOpen}
       />
-      <MedicineTypeList editMode={editMode} />
+      <MedicineFormList editMode={editMode} />
 
       <CustomModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        title="Add New Medicine Type"
+        title="Add New Medicine Form"
         isDismissable={false}
       >
-        <AddNewMedicineType closeModal={onOpenChange} />
+        <AddNewMedicineForm closeModal={onOpenChange} />
       </CustomModal>
     </>
   );
 }
 
-export default AdminMedicineType;
+export default AdminMedicineForm;

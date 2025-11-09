@@ -66,8 +66,8 @@ function MedicineList({ editMode }) {
                   )}
                   </div>
                     <div className="flex gap-4 flex-wrap">
-                      <p className="capitalize text-sm">Category: {medicine.type.medicineType}</p>
                       <p className="capitalize text-sm">Company: {medicine.company.company}</p>
+                      <p className="capitalize text-sm">Medicine Form: {medicine.medicine_form.medicineForm}</p>
                     </div>
                     <div className="flex gap-4 flex-wrap">
                       <p className="capitalize text-sm">Price: {medicine.originalPrice}</p>
