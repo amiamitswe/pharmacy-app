@@ -10,11 +10,11 @@ import {
   Button,
   Badge,
 } from "@heroui/react";
-import { ThemeSwitcher } from "../common/ThemeSwitcher";
+import { ThemeSwitcher } from "../components/common/ThemeSwitcher";
 import { Link, useNavigate } from "react-router";
 import { useAtom } from "jotai";
-import { authAtom } from "../../atoms/authAtom";
-import LogoutButton from "../common/LogoutButton";
+import { authAtom } from "../atoms/authAtom";
+import LogoutButton from "../components/common/LogoutButton";
 import { FaCartPlus, FaUser } from "react-icons/fa";
 
 export const AcmeLogo = () => {
@@ -113,6 +113,7 @@ export default function CustomNavbar() {
                 variant="bordered"
                 radius="full"
                 className="border-default-200 border-1"
+                onPress={() => navigation("/user/shopping-cart")}
               >
                 <FaCartPlus size={20} />
               </Button>

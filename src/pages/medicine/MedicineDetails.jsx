@@ -6,7 +6,7 @@ import { FaCartPlus } from "react-icons/fa";
 import { medicineService } from "../../api-services";
 import { useAtom } from "jotai";
 import { authAtom } from "../../atoms/authAtom";
-
+import Loader from "../../components/common/Loader";
 
 export default function MedicineDetails() {
   const { id } = useParams();
@@ -14,12 +14,33 @@ export default function MedicineDetails() {
   const [user] = useAtom(authAtom);
   const [qty, setQty] = React.useState(1);
   const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchMedicineDetails = async () => {
-      const response = await medicineService.getMedicineById(id);
-      if (response.status === 200) {
-        setData(response.data.result || {});
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await medicineService.getMedicineById(id);
+        if (response.status === 200) {
+          const result = response.data.result || {};
+          if (Object.keys(result).length === 0) {
+            setError("Medicine not found");
+          } else {
+            setData(result);
+          }
+        } else {
+          setError("Failed to fetch medicine details");
+        }
+      } catch (err) {
+        setError(
+          err.response.data.message ||
+            "An error occurred while fetching medicine details"
+        );
+        console.error("Error fetching medicine details:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMedicineDetails();
@@ -36,6 +57,40 @@ export default function MedicineDetails() {
       console.log("Here will be logic for handle add to card", { qty });
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error || !data || Object.keys(data).length === 0) {
+    return (
+      <>
+        <PageHeader label="Product" />
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 h-[calc(100vh-230px)]">
+          <Card shadow="sm">
+            <CardBody className="flex flex-col items-center justify-center py-12">
+              <p className="text-2xl font-semibold text-danger mb-4">
+                {error || "Medicine not found"}
+              </p>
+              <p className="text-foreground-500 mb-6">
+                The medicine you're looking for doesn't exist or has been
+                removed.
+              </p>
+              <Button
+                as={Link}
+                to="/"
+                color="primary"
+                variant="flat"
+                radius="lg"
+              >
+                Go Back Home
+              </Button>
+            </CardBody>
+          </Card>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -102,24 +157,31 @@ export default function MedicineDetails() {
                         .join(" + ")}
                     </Link>
                   </p>
-                  <p className="text-base  capitalize">
+                  <p className="text-base capitalize">
                     Strength:{" "}
-                    <Link isExternal to="#" className="underline underline-offset-2">
+                    <Link
+                      isExternal
+                      to="#"
+                      className="underline underline-offset-2"
+                    >
                       {data?.generics_and_strengths
                         ?.map((g) => g.strength)
                         .join(" + ")}
                     </Link>
+                    <span className="text-gray-500 text-sm ml-2">
+                      ({data?.medicine_form?.medicineForm})
+                    </span>
                   </p>
 
+                  <p className="text-base capitalize">
+                    Medicine Uint Info: {data?.unitInfo}
+                  </p>
                   <p className="text-base capitalize">
                     Brand:{" "}
                     <Link to="#" className="underline underline-offset-2">
                       {data?.company?.company || ""} - (
                       {data?.company?.country || ""})
                     </Link>
-                  </p>
-                  <p className="text-base capitalize">
-                    Medicine Form: {data?.unit}
                   </p>
                 </div>
 

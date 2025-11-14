@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Chip,
   Image,
 } from "@heroui/react";
 import { useAtom } from "jotai";
@@ -38,7 +39,13 @@ function MedicineItem({ data }) {
           setAuth((pre) => ({
             ...pre,
             cartItemCount: pre.cartItemCount + 1,
+            cartItems: [...pre.cartItems, data?._id],
           }));
+        } else {
+          addToast({
+            title: response.data.message || "Something went wrong",
+            color: "danger",
+          });
         }
       } catch (error) {
         addToast({
@@ -52,10 +59,12 @@ function MedicineItem({ data }) {
     }
   };
 
+  console.log(data?.discount);
+
   return (
     <Card shadow="sm">
       <Link to={`medicine/${data?._id}`}>
-        <CardBody className="overflow-visible p-0">
+        <CardBody className="overflow-visible p-0 product-cart">
           <Image
             isZoomed
             alt={"item.title"}
@@ -63,9 +72,18 @@ function MedicineItem({ data }) {
             radius="lg"
             shadow="sm"
             src={data?.picUrl}
-            fallbackSrc="https://avatars.githubusercontent.com/u/30245543?v=4"
+            fallbackSrc="https://amit-pharmacy-app.s3.eu-north-1.amazonaws.com/uploads/1763148065525-not-found.jpg"
             width="100%"
           />
+          {data?.discount ? (
+            <div className="absolute top-2 right-2 z-10">
+              <Chip color="primary" variant="flat" size="md">
+                Discount {data?.discount?.toFixed(2)} %
+              </Chip>
+            </div>
+          ) : (
+            ""
+          )}
         </CardBody>
       </Link>
       <CardFooter className="text-small items-start flex-col gap-2 text-left justify-between">
