@@ -3,7 +3,7 @@ import LogoutButton from "../../components/common/LogoutButton";
 import { useAtom } from "jotai";
 import { authAtom } from "../../atoms/authAtom";
 import { Link } from "react-router";
-import { AcmeLogo } from "../../components/layout/CustomNavbar";
+import { AcmeLogo } from "../CustomNavbar";
 import AdminMenuDrawer from "./AdminMenuDrawer";
 
 function AdminHeader() {

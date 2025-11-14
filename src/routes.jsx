@@ -19,10 +19,11 @@ import AdminNotFound from "./pages/admin/AdminNotFound";
 
 import UserOrders from "./pages/user/UserOrders";
 import UserNotFound from "./pages/user/UserNotFound";
+import UserShoppingCart from "./pages/user/UserShoppingCart";
 
 // (Optional) user-only pages live under /user/* but there is no generic /user dashboard
 import AdminLayout from "./layouts/admin/AdminLayout";
-import UserLayout from "./layouts/UserLayout";
+import UserLayout from "./layouts/user/UserLayout";
 import PublicLayout from "./layouts/PublicLayout";
 
 import Login from "./pages/auth/Login";
@@ -82,6 +83,7 @@ const routes = [
     loader: requireUser, // blocks anon and admins
     children: [
       { path: "orders", element: <UserOrders /> },
+      { path: "shopping-cart", element: <UserShoppingCart /> },
       { path: "*", element: <UserNotFound /> },
     ],
   },
