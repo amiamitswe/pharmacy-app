@@ -2,6 +2,8 @@ import { addToast, Card, CardBody, CardHeader, Image } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import addToCartService from "../../api-services/addToCartService";
 
+import ModifyCartQuantity from "./cart-handler/ModifyCartQuantity";
+
 function UserShoppingCart() {
   const [cartData, setCartData] = useState([]);
 
@@ -26,7 +28,7 @@ function UserShoppingCart() {
     fetchCartItems();
   }, []);
 
-  console.log({ cartData });
+  // console.log({ cartData });
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,7 +41,9 @@ function UserShoppingCart() {
             )}
           </p>
 
-          <p className="text-lg font-bold">Total Price: {cartData?.totalPrice} Taka</p>
+          <p className="text-lg font-bold">
+            Total Price: {cartData?.totalPrice?.toFixed(2)} Taka
+          </p>
         </CardHeader>
       </Card>
       <Card shadow="sm">
@@ -48,14 +52,22 @@ function UserShoppingCart() {
             {cartData?.items?.map((item) => (
               <div
                 key={item._id}
-                className="flex gap-4 items-center border-1 border-gray-200 dark:border-gray-700 rounded-md p-2"
+                className="flex gap-4 items-center justify-between border-1 border-gray-200 dark:border-gray-700 rounded-md p-2"
               >
-                <Image
-                  className="w-16 h-16 object-cover"
-                  src={item?.medicine?.picUrl}
-                  alt={item?.medicine?.medicineName}
-                />
-                <p>{item?.medicine?.medicineName}</p>
+                <div className="flex items-center gap-4">
+                  <Image
+                    className="w-16 h-16 object-cover"
+                    src={item?.medicine?.picUrl}
+                    alt={item?.medicine?.medicineName}
+                  />
+                  <p>{item?.medicine?.medicineName}</p>
+                  <p>
+                    {item?.discountPrice?.toFixed(2)} X {item?.quantity} ={" "}
+                    {item?.totalItemPrice?.toFixed(2)} Taka
+                  </p>
+                </div>
+
+                <ModifyCartQuantity item={item} setCartData={setCartData} />
               </div>
             ))}
           </div>

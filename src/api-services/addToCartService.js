@@ -10,5 +10,9 @@ const addToCartService = {
     const response = await api.get("/shopping-cart");
     return response;
   },
+  updateCartItemQuantity: async (itemId, quantity) => {
+    const response = await api.patch(`/shopping-cart/update-cart/${itemId}`, { quantity });
+    return response;
+  },
 };
 export default addToCartService;
