@@ -35,7 +35,7 @@ export default function CustomNavbar() {
   const [user] = useAtom(authAtom);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  console.log({user});
+  // console.log({user});
   
 
   const menuItems = [

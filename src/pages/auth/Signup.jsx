@@ -76,7 +76,7 @@ const Signup = () => {
               fullName: "Amit",
               email: "amit@gm.co",
               phone: "01918876543",
-              password: "Aadfsadf1",
+              password: "Password123",
             }}
             validationSchema={SignupSchema}
             onSubmit={(values, { setErrors }) =>

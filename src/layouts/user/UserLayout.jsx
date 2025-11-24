@@ -21,7 +21,7 @@ export default function UserLayout() {
         <div className="lg:col-span-10 col-span-12">
           <CustomNavbar />
 
-          <main className="min-h-[calc(100vh-112px)] flex flex-col md:p-6 p-4">
+          <main className="min-h-[calc(100vh-122px)] flex flex-col md:p-6 p-4">
             <Outlet />
           </main>
           <Footer />

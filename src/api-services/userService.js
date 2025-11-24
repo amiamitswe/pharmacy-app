@@ -36,6 +36,28 @@ const userService = {
     });
     return response;
   },
+
+  getUserAddress: async (query) => {
+    const response = await api.get(`/user/address`, {
+      params: query,
+    });
+    return response;
+  },
+
+  addUserAddress: async (addressData) => {
+    const response = await api.post(`/user/address`, addressData);
+    return response;
+  },
+
+  makeDefaultAddress: async (addressId) => {
+    const response = await api.patch(`/user/address/${addressId}/make-default`);
+    return response;
+  },
+
+  deleteAddress: async (addressId) => {
+    const response = await api.delete(`/user/address/${addressId}`);
+    return response;
+  },
 };
 
 export default userService;
