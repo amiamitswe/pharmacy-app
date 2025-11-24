@@ -1,8 +1,9 @@
 import React from "react";
 import { FaHome, FaBuilding, FaMapMarkerAlt } from "react-icons/fa";
 import { HiLocationMarker } from "react-icons/hi";
-import { addToast, Switch } from "@heroui/react";
+import { addToast, Button, Switch } from "@heroui/react";
 import userService from "../../../api-services/userService";
+import { FaTrash } from "react-icons/fa6";
 
 const getAddressTypeIcon = (type) => {
   const typeLower = type?.toLowerCase() || "";
@@ -37,8 +38,30 @@ function SingleAddress({ add, fetchAddress }) {
     }
   };
 
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      const response = await userService.deleteAddress(addressId);
+      if (response.status === 200) {
+        addToast({
+          title: "Success",
+          description: "Address deleted successfully",
+          color: "success",
+        });
+        // Refresh the address list
+        await fetchAddress();
+      }
+    } catch (error) {
+      console.log(error);
+      addToast({
+        title: "Error",
+        description: "Failed to delete address",
+        color: "danger",
+      });
+    }
+  };
+
   return (
-    <div className="group relative border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
+    <div className="group relative border border-gray-200 dark:border-gray-700 rounded-lg p-5 dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
       {/* Header with Address Type and Default Badge */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -53,15 +76,25 @@ function SingleAddress({ add, fetchAddress }) {
           </span>
         ) : (
           <div className="group-hover:flex items-center gap-2 hidden">
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              Set as default
-            </span>
-            <Switch
-              isSelected={false}
-              onValueChange={() => handleMakeDefault(add?._id)}
-              aria-label="Set as default address"
-              size="sm"
-            />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                Set as default
+              </span>
+              <Switch
+                isSelected={false}
+                onValueChange={() => handleMakeDefault(add?._id)}
+                aria-label="Set as default address"
+                size="sm"
+              />
+            </div>
+            <Button
+              onPress={() => handleDeleteAddress(add?._id)}
+              isIconOnly
+              className="absolute bottom-4 right-4"
+              color="danger"
+            >
+              <FaTrash />
+            </Button>
           </div>
         )}
       </div>

@@ -5,7 +5,8 @@ import {
   CardBody,
   CardHeader,
   DatePicker,
-  Spinner,
+  Radio,
+  RadioGroup,
 } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import { today, toCalendarDateTime } from "@internationalized/date";
@@ -13,6 +14,10 @@ import addToCartService from "../../api-services/addToCartService";
 import { useNavigate } from "react-router";
 import CartItems from "../../components/user/cart/CartItems";
 import UserAddress from "../../components/user/user-address/UserAddress";
+import { orderService } from "../../api-services";
+import { FaAddressCard } from "react-icons/fa";
+import { useSetAtom } from "jotai";
+import { authAtom } from "../../atoms/authAtom";
 
 const DHAKA_TIMEZONE = "Asia/Dhaka";
 
@@ -38,6 +43,8 @@ function UserShoppingCart() {
   const navigate = useNavigate();
   const [value, setValue] = useState(today(DHAKA_TIMEZONE));
   const [cartData, setCartData] = useState(null);
+ 
+  const setAuth = useSetAtom(authAtom);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -59,15 +66,43 @@ function UserShoppingCart() {
     fetchCartItems();
   }, []);
 
-  const checkoutHandler = () => {
+  const checkoutHandler = async () => {
     const data = {
-      cartId: cartData?.items?.[0]._id,
-      paymentMethod: "COD",
+      cartId: cartData?._id,
+      paymentMethod: "cod",
       deliveryScheduledAt: formatDateToISO(value),
     };
-    console.log("checkoutHandler");
+
     console.log(data);
-    console.log({ value });
+
+    try {
+      const response = await orderService.placeOrder(data);
+      if (response.status === 201) {
+        addToast({
+          title: "Order placed successfully",
+          color: "success",
+        });
+
+        setAuth((pre) => ({
+          ...pre,
+          cartItemCount: pre.cartItemCount - cartData?.items?.length,
+          cartItems: pre.cartItems.filter((item) => item !== cartData?._id),
+        }));
+
+        navigate("/user/orders");
+      } else {
+        addToast({
+          title: response.data.message || "Something went wrong",
+          color: "danger",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      addToast({
+        color: "danger",
+        description: error?.data?.message || "Something went wrong",
+      });
+    }
   };
 
   return (
@@ -100,8 +135,18 @@ function UserShoppingCart() {
             className="bg-gray-50 dark:bg-gray-900 col-span-1 h-fit"
           >
             <CardBody>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2 relative group ">
                 <UserAddress />
+                <div className="absolute h-full w-full bg-gray-200/50 rounded-lg hidden group-hover:block"></div>
+                <Button
+                  variant="solid"
+                  color="primary"
+                  onPress={() => navigate("/user/address-book")}
+                  className="absolute z-10 hidden group-hover:flex left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                >
+                  <FaAddressCard className="text-white" />
+                  Change Default Address
+                </Button>
               </div>
 
               <DatePicker
@@ -115,13 +160,18 @@ function UserShoppingCart() {
                 }}
               />
 
+              <div className="border-1 border-gray-200 dark:border-gray-700 p-3 mt-4 rounded-xl">
+                <RadioGroup label="Payment method" value="cod">
+                  <Radio value="cod">Cash on delivery</Radio>
+                </RadioGroup>
+              </div>
+
               <p className="text-lg font-semibold mt-10">
                 Total Price: {cartData?.totalPrice?.toFixed(2)} Taka
               </p>
 
               <Button
                 size="lg"
-                
                 onPress={checkoutHandler}
                 className="mt-5 uppercase w-full bg-teal-400 text-2xl h-16 font-bold text-white"
               >

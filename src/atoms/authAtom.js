@@ -9,5 +9,3 @@ export const authAtom = atom({
   cartItemCount: 0,
   cartItems: []
 });
-
-export const addressLoadingAtom = atom(false);

@@ -14,10 +14,10 @@ import userService from "../../../api-services/userService";
 import CustomModal from "../../common/modal/CustomModal";
 
 const addressTypeOptions = [
-  { label: "Home", value: "home" },
-  { label: "Office", value: "office" },
-  { label: "Work", value: "work" },
-  { label: "Other", value: "other" },
+  { label: "Home", value: "Home" },
+  { label: "Office", value: "Office" },
+  { label: "Work", value: "Work" },
+  { label: "Other", value: "Other" },
 ];
 
 const validationSchema = Yup.object({
