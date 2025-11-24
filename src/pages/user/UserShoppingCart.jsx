@@ -1,13 +1,53 @@
-import { addToast, Button, Card, CardBody, CardHeader } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  DatePicker,
+  Spinner,
+} from "@heroui/react";
 import React, { useEffect, useState } from "react";
+import { today, toCalendarDateTime } from "@internationalized/date";
 import addToCartService from "../../api-services/addToCartService";
 import { useNavigate } from "react-router";
-import UserAddress from "../../components/user/user-address/UserAddress";
 import CartItems from "../../components/user/cart/CartItems";
+
+// import userService from "../../api-services/userService";
+import CartSelectAddress from "../../components/user/cart/CartSelectAddress";
+import { useAtomValue } from "jotai";
+import { addressLoadingAtom } from "../../atoms/authAtom";
+import UserAddress from "../../components/user/user-address/UserAddress";
+
+const DHAKA_TIMEZONE = "Asia/Dhaka";
+
+// Helper function to convert CalendarDate to ISO string with time 11:00:00
+const formatDateToISO = (calendarDate) => {
+  if (!calendarDate) {
+    const now = new Date();
+    const dhakaDate = new Date(
+      now.toLocaleString("en-US", { timeZone: DHAKA_TIMEZONE })
+    );
+    dhakaDate.setHours(11, 0, 0, 0);
+    return dhakaDate.toISOString();
+  }
+
+  const dateTime = toCalendarDateTime(calendarDate, {
+    hour: 11,
+    minute: 0,
+    second: 0,
+  });
+  return dateTime.toDate(DHAKA_TIMEZONE).toISOString();
+};
 
 function UserShoppingCart() {
   const navigate = useNavigate();
-  const [cartData, setCartData] = useState([]);
+  const [value, setValue] = useState(today(DHAKA_TIMEZONE));
+  const [cartData, setCartData] = useState(null);
+  const addressLoading = useAtomValue(addressLoadingAtom);
+  // const [addresses, setAddresses] = useState([]);
+  // const [addressLoading, setAddressLoading] = useState(false);
+  // const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -15,7 +55,6 @@ function UserShoppingCart() {
         const response = await addToCartService.getCartItems();
         if (response.status === 200) {
           setCartData(response.data.data);
-          console.log(response.data.data);
         } else {
           addToast({
             title: response.data.message || "Something went wrong",
@@ -30,7 +69,43 @@ function UserShoppingCart() {
     fetchCartItems();
   }, []);
 
-  // console.log({ cartData });
+  // useEffect(() => {
+  //   const fetchAddress = async () => {
+  //     try {
+  //       setAddressLoading(true);
+  //       const response = await userService.getUserAddress();
+  //       if (response.status === 200) {
+  //         // Extract the address array from the response
+  //         const addressArray = response.data.data?.address || [];
+  //         setAddresses(addressArray);
+  //         // Find and set default address
+  //         const defaultAddress = addressArray.find((addr) => addr.isDefault);
+  //         if (defaultAddress) {
+  //           setSelectedAddressId(defaultAddress._id);
+  //         } else if (addressArray.length > 0) {
+  //           setSelectedAddressId(addressArray[0]._id);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setAddressLoading(false);
+  //     }
+  //   };
+
+  //   fetchAddress();
+  // }, []);
+
+  const checkoutHandler = () => {
+    const data = {
+      cartId: cartData?.items?.[0]._id,
+      paymentMethod: "COD",
+      deliveryScheduledAt: formatDateToISO(value),
+    };
+    console.log("checkoutHandler");
+    console.log(data);
+    console.log({ value });
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -50,18 +125,48 @@ function UserShoppingCart() {
       </Card>
       {cartData?.items?.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
-          <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 col-span-2">
+          <Card
+            shadow="sm"
+            className="bg-gray-50 dark:bg-gray-900 col-span-2 h-fit"
+          >
             <CartItems cartData={cartData} setCartData={setCartData} />
           </Card>
 
-          <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 col-span-1">
+          <Card
+            shadow="sm"
+            className="bg-gray-50 dark:bg-gray-900 col-span-1 h-fit"
+          >
             <CardBody>
               <div className="flex flex-col gap-4">
+                {addressLoading && (
+                  <div className="flex justify-center items-center flex-col h-[100px]">
+                    <Spinner color="primary" />
+                    <p className="text-xs">Loading address...</p>
+                  </div>
+                )}
                 <UserAddress onlyDefault />
               </div>
-              <p>Total Price: {cartData?.totalPrice?.toFixed(2)} Taka</p>
 
-              <Button onPress={() => {}} className="mt-5">
+              <DatePicker
+                label="Select Delivery Date"
+                value={value}
+                onChange={(date) => setValue(date)}
+                className="mt-4"
+                classNames={{
+                  inputWrapper:
+                    "bg-transparent border-1 border-gray-200 dark:border-gray-700",
+                }}
+              />
+
+              <p className="text-lg font-semibold mt-10">
+                Total Price: {cartData?.totalPrice?.toFixed(2)} Taka
+              </p>
+
+              <Button
+                size="lg"
+                onPress={checkoutHandler}
+                className="mt-5 uppercase w-full"
+              >
                 Checkout
               </Button>
             </CardBody>
