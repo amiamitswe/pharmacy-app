@@ -43,6 +43,16 @@ const userService = {
     });
     return response;
   },
+
+  addUserAddress: async (addressData) => {
+    const response = await api.post(`/user/address`, addressData);
+    return response;
+  },
+
+  makeDefaultAddress: async (addressId) => {
+    const response = await api.patch(`/user/address/${addressId}/make-default`);
+    return response;
+  },
 };
 
 export default userService;
