@@ -36,6 +36,13 @@ const userService = {
     });
     return response;
   },
+
+  getUserAddress: async (query) => {
+    const response = await api.get(`/user/address`, {
+      params: query,
+    });
+    return response;
+  },
 };
 
 export default userService;

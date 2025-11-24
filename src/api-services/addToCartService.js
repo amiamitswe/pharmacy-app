@@ -10,8 +10,14 @@ const addToCartService = {
     const response = await api.get("/shopping-cart");
     return response;
   },
+  
   updateCartItemQuantity: async (itemId, quantity) => {
     const response = await api.patch(`/shopping-cart/update-cart/${itemId}`, { quantity });
+    return response;
+  },
+
+  deleteCartItem: async (itemId) => {
+    const response = await api.delete(`/shopping-cart/delete-cart-item/${itemId}`);
     return response;
   },
 };

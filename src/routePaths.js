@@ -16,6 +16,7 @@ const adminLinks = [
 
 const userLinks = [
   { id: 1, label: "Profile", to: "/user/profile" },
+  { id: 122, label: "Address Book", to: "/user/address-book" },
   { id: 2, label: "Orders", to: "/user/orders" },
   { id: 3, label: "Shopping Cart", to: "/user/shopping-cart" },
 ];

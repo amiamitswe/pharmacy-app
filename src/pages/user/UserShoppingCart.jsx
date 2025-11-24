@@ -1,10 +1,12 @@
-import { addToast, Card, CardBody, CardHeader, Image } from "@heroui/react";
+import { addToast, Button, Card, CardBody, CardHeader } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import addToCartService from "../../api-services/addToCartService";
-
-import ModifyCartQuantity from "./cart-handler/ModifyCartQuantity";
+import { useNavigate } from "react-router";
+import UserAddress from "../../components/user/user-address/UserAddress";
+import CartItems from "../../components/user/cart/CartItems";
 
 function UserShoppingCart() {
+  const navigate = useNavigate();
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ function UserShoppingCart() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card shadow="sm">
+      <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
         <CardHeader className="flex justify-between items-center">
           <p className="text-lg font-semibold">
             Shopping Cart{" "}
@@ -46,33 +48,33 @@ function UserShoppingCart() {
           </p>
         </CardHeader>
       </Card>
-      <Card shadow="sm">
-        <CardBody>
-          <div className="flex flex-col gap-4">
-            {cartData?.items?.map((item) => (
-              <div
-                key={item._id}
-                className="flex gap-4 items-center justify-between border-1 border-gray-200 dark:border-gray-700 rounded-md p-2"
-              >
-                <div className="flex items-center gap-4">
-                  <Image
-                    className="w-16 h-16 object-cover"
-                    src={item?.medicine?.picUrl}
-                    alt={item?.medicine?.medicineName}
-                  />
-                  <p>{item?.medicine?.medicineName}</p>
-                  <p>
-                    {item?.discountPrice?.toFixed(2)} X {item?.quantity} ={" "}
-                    {item?.totalItemPrice?.toFixed(2)} Taka
-                  </p>
-                </div>
+      {cartData?.items?.length > 0 ? (
+        <div className="grid grid-cols-3 gap-4">
+          <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 col-span-2">
+            <CartItems cartData={cartData} setCartData={setCartData} />
+          </Card>
 
-                <ModifyCartQuantity item={item} setCartData={setCartData} />
+          <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 col-span-1">
+            <CardBody>
+              <div className="flex flex-col gap-4">
+                <UserAddress onlyDefault />
               </div>
-            ))}
-          </div>
-        </CardBody>
-      </Card>
+              <p>Total Price: {cartData?.totalPrice?.toFixed(2)} Taka</p>
+
+              <Button onPress={() => {}} className="mt-5">
+                Checkout
+              </Button>
+            </CardBody>
+          </Card>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-[300px]">
+          <p className="text-lg font-semibold">No items in cart</p>
+          <Button onPress={() => navigate("/")} className="mt-5">
+            Go to Home
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

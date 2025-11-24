@@ -1,9 +1,47 @@
 import { addToast, Button } from "@heroui/react";
 import React from "react";
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa6";
-import addToCartService from "../../../api-services/addToCartService";
+import addToCartService from "../../../../api-services/addToCartService";
 
 function ModifyCartQuantity({ item, setCartData }) {
+  const deleteItemFromCartHandler = async (itemId) => {
+    try {
+      const response = await addToCartService.deleteCartItem(itemId);
+      if (response.status === 200) {
+        addToast({
+          title: response.data.message,
+          color: "success",
+        });
+        setCartData((prev) => {
+          const updatedItems = prev.items.filter((item) => item._id !== itemId);
+          
+          // Recalculate total price by summing all remaining items
+          const totalPrice = updatedItems.reduce(
+            (sum, item) => sum + item.totalItemPrice,
+            0
+          );
+
+          return {
+            ...prev,
+            items: updatedItems,
+            totalPrice: totalPrice,
+          };
+        });
+      } else {
+        addToast({
+          title: response.data.message,
+          color: "danger",
+        });
+      }
+    } catch (error) {
+      console.error(error.data.message);
+      addToast({
+        title: error?.data?.message || "Something went wrong",
+        color: "danger",
+      });
+    }
+  };
+
   const changeQuantityHandler = async (itemId, quantity) => {
     try {
       const response = await addToCartService.updateCartItemQuantity(
@@ -61,7 +99,12 @@ function ModifyCartQuantity({ item, setCartData }) {
         <FaPlus />
       </Button>
 
-      <Button isIconOnly variant="light" color="danger">
+      <Button
+        onPress={() => deleteItemFromCartHandler(item?._id)}
+        isIconOnly
+        variant="light"
+        color="danger"
+      >
         <FaTrash />
       </Button>
     </div>
