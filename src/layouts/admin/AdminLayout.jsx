@@ -12,7 +12,7 @@ export default function AdminLayout() {
       <AuthWatcher />
       <div className="grid grid-cols-12">
         <div className="hidden overflow-visible relative z-10 lg:block lg:col-span-2 bg-slate-100 dark:bg-slate-900 min-h-screen border-r-1.5 border-slate-300 dark:border-slate-700">
-          <div className="p-4">
+          <div className="p-4 sticky top-0">
             <Link to="/admin" className="flex items-center gap-2 text-lg">
               <AcmeLogo /> Admin Panel
             </Link>

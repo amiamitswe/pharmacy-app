@@ -15,6 +15,13 @@ const orderService = {
     const response = await api.get(`/orders/${id}`);
     return response;
   },
+
+  getOrdersByAdmin: async (params = {}) => {
+    const response = await api.get("/orders/admin/active-orders", {
+      params,
+    });
+    return response;
+  },
 };
 
 export default orderService;
