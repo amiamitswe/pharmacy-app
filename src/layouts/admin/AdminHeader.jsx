@@ -11,7 +11,7 @@ function AdminHeader() {
 
   return (
     <>
-      <header className="bg-slate-100 dark:bg-slate-900 h-14 p-4 flex justify-between items-center border-b border-slate-300 dark:border-slate-700">
+      <header className="bg-slate-100 dark:bg-slate-900 h-14 p-4 flex justify-between items-center border-b border-slate-300 dark:border-slate-700 sticky top-0 z-20">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex lg:hidden items-center gap-2 text-lg">
             <AcmeLogo />
