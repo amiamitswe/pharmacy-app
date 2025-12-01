@@ -17,15 +17,15 @@ const LoginSchema = Yup.object().shape({
     .required("Required"),
 });
 
-// Test credentials (can be removed without affecting functionality)
+// Test credentials from environment variables (only available in dev)
 const TEST_CREDENTIALS = {
   admin: {
-    email: "amiamitswe@gmail.com",
-    password: "Amit1212",
+    email: import.meta.env.VITE_TEST_ADMIN_EMAIL || "",
+    password: import.meta.env.VITE_TEST_ADMIN_PASSWORD || "",
   },
   user: {
-    email: "abir@gm.co",
-    password: "Amit1212",
+    email: import.meta.env.VITE_TEST_USER_EMAIL || "",
+    password: import.meta.env.VITE_TEST_USER_PASSWORD || "",
   },
 };
 
