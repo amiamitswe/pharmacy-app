@@ -6,6 +6,7 @@ import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
 import { Formik } from "formik";
 import userService from "../../api-services/userService";
 import { useState } from "react";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -16,10 +17,23 @@ const LoginSchema = Yup.object().shape({
     .required("Required"),
 });
 
+// Test credentials from environment variables (only available in dev)
+const TEST_CREDENTIALS = {
+  admin: {
+    email: import.meta.env.VITE_TEST_ADMIN_EMAIL || "",
+    password: import.meta.env.VITE_TEST_ADMIN_PASSWORD || "",
+  },
+  user: {
+    email: import.meta.env.VITE_TEST_USER_EMAIL || "",
+    password: import.meta.env.VITE_TEST_USER_PASSWORD || "",
+  },
+};
+
 export default function Login() {
   const setAuth = useSetAtom(authAtom);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [searchParams] = useSearchParams();
   const fallback_url = searchParams.get("fallback_url");
@@ -82,11 +96,10 @@ export default function Login() {
       <Card className="w-full max-w-lg shadow-lg">
         <CardBody className="p-10">
           <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-
           <Formik
             initialValues={{
-              email: "amiamitswe@gmail.com",
-              password: "Amit1212",
+              email: "",
+              password: "",
             }}
             validationSchema={LoginSchema}
             onSubmit={(values) => loginHandler(values)}
@@ -100,6 +113,39 @@ export default function Login() {
               setFieldTouched,
             }) => (
               <form onSubmit={handleSubmit}>
+                {/* Test credentials buttons (only shown in dev environment) */}
+                {import.meta.env.VITE_ENVIRONMENT === "dev" && (
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="bordered"
+                      onClick={() => {
+                        setFieldValue("email", TEST_CREDENTIALS.user.email);
+                        setFieldValue(
+                          "password",
+                          TEST_CREDENTIALS.user.password
+                        );
+                      }}
+                    >
+                      User
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="bordered"
+                      onClick={() => {
+                        setFieldValue("email", TEST_CREDENTIALS.admin.email);
+                        setFieldValue(
+                          "password",
+                          TEST_CREDENTIALS.admin.password
+                        );
+                      }}
+                    >
+                      Admin
+                    </Button>
+                  </div>
+                )}
                 <div className="flex flex-col gap-4">
                   <Input
                     label="Email"
@@ -118,7 +164,7 @@ export default function Login() {
                   <Input
                     label="Password"
                     size="sm"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     value={values.password}
                     onValueChange={(v) => setFieldValue("password", v)}
@@ -127,6 +173,18 @@ export default function Login() {
                     errorMessage={touched.password ? errors.password : ""}
                     autoComplete="current-password"
                     variant="bordered"
+                    endContent={
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="light"
+                        onPress={() => setShowPassword(!showPassword)}
+                        isIconOnly
+                        className="mb-0.5"
+                      >
+                        {!showPassword ? <BsEye className="h-6 w-6" /> : <BsEyeSlash className="h-6 w-6" />}
+                      </Button>
+                    }
                   />
 
                   <Button

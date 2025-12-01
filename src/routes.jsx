@@ -37,6 +37,7 @@ import MedicineDetails from "./pages/medicine/MedicineDetails";
 import AdminEditor from "./pages/admin/AdminEditor";
 import AddressBook from "./pages/user/AddressBook";
 import UserOrderDetails from "./pages/user/UserOrderDetails";
+import UserProfile from "./pages/user/UserProfile";
 
 const routes = [
   // 🌐 Public site — admin is redirected away, users are allowed
@@ -85,6 +86,7 @@ const routes = [
     loader: requireUser, // blocks anon and admins
     children: [
       { path: "orders", element: <UserOrders /> },
+      { path: "profile", element: <UserProfile /> },
       { path: "orders/:id", element: <UserOrderDetails /> },
       { path: "address-book", element: <AddressBook /> },
       { path: "shopping-cart", element: <UserShoppingCart /> },

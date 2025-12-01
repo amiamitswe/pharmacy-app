@@ -12,23 +12,8 @@ import {
 import { today } from "@internationalized/date";
 import AdminOrderItem from "../../components/admin/AdminOrderItem";
 import PaginationComponent from "../../components/common/PaginationComponent";
-import { FaFilter, FaTimes, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-
-const ORDER_STATUS_OPTIONS = [
-  { label: "All Status", value: "" },
-  { label: "Pending", value: "order_pending" },
-  { label: "Processing", value: "processing" },
-  { label: "Shipped", value: "shipped" },
-  { label: "Delivered", value: "delivered" },
-  { label: "Completed", value: "completed" },
-  { label: "Cancelled", value: "cancelled" },
-  { label: "Failed", value: "failed" },
-];
-
-const SORT_OPTIONS = [
-  { label: "Newest First (Desc)", value: "desc" },
-  { label: "Oldest First (Asc)", value: "asc" },
-];
+import { FaFilter, FaTimes, FaSortUp, FaSortDown } from "react-icons/fa";
+import { ORDER_SORT_OPTIONS, ORDER_STATUS_OPTIONS } from "../../utils/order_related_static_data";
 
 const DHAKA_TIMEZONE = "Asia/Dhaka";
 
@@ -217,7 +202,7 @@ export default function AdminOrders() {
                   )
                 }
               >
-                {SORT_OPTIONS.map((option) => (
+                {ORDER_SORT_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>

@@ -30,6 +30,20 @@ const userService = {
     return response;
   },
 
+  updateProfile: async (payload) => {
+    // Check if payload is FormData (for file uploads)
+    const isFormData = payload instanceof FormData;
+    const config = isFormData
+      ? {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      : {};
+    const response = await api.put("/user/update", payload, config);
+    return response;
+  },
+
   getAllUsers: async (payload) => {
     const response = await api.get("/user/get-all-users", {
       params: payload,

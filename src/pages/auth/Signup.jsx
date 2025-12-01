@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { addToast, Button, Card, CardBody, Input } from "@heroui/react";
 import { Link, useNavigate } from "react-router";
 import userService from "../../api-services/userService";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
 
 // ✅ Validation Schema
 const SignupSchema = Yup.object().shape({
@@ -24,6 +25,7 @@ const SignupSchema = Yup.object().shape({
 const Signup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const signUpHandler = async (values, { setErrors }) => {
     setLoading(true);
@@ -76,7 +78,7 @@ const Signup = () => {
               fullName: "Amit",
               email: "amit@gm.co",
               phone: "01918876543",
-              password: "Password123",
+              password: "Amit1212",
             }}
             validationSchema={SignupSchema}
             onSubmit={(values, { setErrors }) =>
@@ -137,15 +139,31 @@ const Signup = () => {
                   <Input
                     label="Password"
                     size="sm"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     value={values.password}
                     onValueChange={(v) => setFieldValue("password", v)}
                     onBlur={() => setFieldTouched("password", true)}
                     isInvalid={touched.password && !!errors.password}
                     errorMessage={touched.password ? errors.password : ""}
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                     variant="bordered"
+                    endContent={
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="light"
+                        onPress={() => setShowPassword(!showPassword)}
+                        isIconOnly
+                        className="mb-0.5"
+                      >
+                        {!showPassword ? (
+                          <BsEye className="h-6 w-6" />
+                        ) : (
+                          <BsEyeSlash className="h-6 w-6" />
+                        )}
+                      </Button>
+                    }
                   />
 
                   <Button

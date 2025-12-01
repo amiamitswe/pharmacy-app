@@ -27,11 +27,17 @@ function AddressBook() {
   }, [fetchAddress]);
 
   return (
-    <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
-      <CardHeader className="justify-end">
+    <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 p-2 md:p-4">
+      <CardHeader className="justify-between">
+        <p className="text-lg font-semibold">
+          Address Book
+          {address?.count > 0 && (
+            <span className="text-gray-500 ml-2">({address?.count})</span>
+          )}
+        </p>
         <AddNewAddressModal fetchAddress={fetchAddress} />
       </CardHeader>
-      <CardBody>
+      <CardBody className="md:min-h-[calc(100vh-265px)]">
         {addressLoading ? (
           <div className="flex justify-center items-center flex-col h-[100px]">
             <Spinner color="primary" />
