@@ -1,27 +1,48 @@
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
-  Chip,
   Spinner,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import orderService from "../../api-services/orderService";
-import { FaCalendarAlt, FaMoneyBillWave, FaBox, FaTruck } from "react-icons/fa";
-import { Link } from "react-router";
+import {
+  ORDER_SORT_OPTIONS,
+  ORDER_STATUS_OPTIONS,
+} from "../../utils/order_related_static_data";
+import UserOrderItem from "../../components/user/orders/UserOrderItem";
+import PaginationComponent from "../../components/common/PaginationComponent";
 
 function UserOrders() {
   const [orders, setOrders] = useState([]);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("order_pending");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await orderService.getOrders();
+        const params = {};
+        if (statusFilter) params.status = statusFilter;
+        if (sortOrder) params.sort = sortOrder;
+        if (currentPage) params.page = currentPage;
+        if (limit) params.limit = limit;
+
+        const response = await orderService.getOrders(params);
         if (response.status === 200) {
-          setOrders(response.data.data || []);
+          setOrders(response.data.result || []);
+          // Handle different possible response structures
+          setTotalOrders(
+            response.data.total ||
+              response.data.count ||
+              (response.data.data || []).length
+          );
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -30,141 +51,113 @@ function UserOrders() {
       }
     };
     fetchOrders();
-  }, []);
+  }, [statusFilter, sortOrder, currentPage, limit]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, sortOrder, limit]);
 
-  const getStatusColor = (status) => {
-    const statusLower = status?.toLowerCase();
-    if (statusLower === "pending" || statusLower === "processing") {
-      return "warning";
-    }
-    if (statusLower === "delivered" || statusLower === "completed") {
-      return "success";
-    }
-    if (statusLower === "cancelled" || statusLower === "failed") {
-      return "danger";
-    }
-    return "default";
-  };
+  // Calculate pagination from server-side total
+  const totalPages = Math.ceil(totalOrders / limit);
+
+  // Use orders directly since filtering and sorting is done on the server
+  const filteredAndSortedOrders = orders;
 
   return (
     <div className="flex flex-col gap-4">
-      <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
-        <CardHeader className="flex justify-between items-center">
+      <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900 p-2 md:p-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <p className="text-lg font-semibold">
             My Orders
-            {orders?.length > 0 && (
-              <span className="text-gray-500 ml-2">({orders.length})</span>
+            {filteredAndSortedOrders?.length > 0 && (
+              <span className="text-gray-500 ml-2">
+                ({filteredAndSortedOrders.length})
+              </span>
             )}
           </p>
+          <div className="flex flex-row gap-3 items-center w-full sm:w-auto">
+            <Select
+              size="sm"
+              label="Filter by Status"
+              placeholder="All Status"
+              selectedKeys={
+                statusFilter
+                  ? new Set([statusFilter])
+                  : new Set(["order_pending"])
+              }
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0];
+                setStatusFilter(selected || "order_pending");
+              }}
+              variant="bordered"
+              className="flex-1 sm:flex-none sm:w-[180px]"
+            >
+              {ORDER_STATUS_OPTIONS?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              size="sm"
+              label="Sort by"
+              placeholder="Sort"
+              selectedKeys={
+                sortOrder ? new Set([sortOrder]) : new Set(["desc"])
+              }
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0];
+                setSortOrder(selected || "desc");
+              }}
+              variant="bordered"
+              className="flex-1 sm:flex-none sm:w-[160px]"
+            >
+              {ORDER_SORT_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
         </CardHeader>
-        <CardBody>
+        <CardBody className="md:min-h-[calc(100vh-265px)]">
           {loading ? (
             <div className="flex justify-center items-center flex-col h-[200px]">
               <Spinner color="primary" />
               <p className="text-sm mt-4 text-gray-500">Loading orders...</p>
             </div>
-          ) : orders?.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {orders.map((order) => (
-                <Link to={`/user/orders/${order._id}`}>
-                  <Card
-                    shadow="sm"
-                    className="border-1 border-gray-200 dark:border-gray-700"
-                  >
-                    <CardBody>
-                      <div className="flex flex-col gap-4">
-                        {/* Order Header */}
-                        <div className="flex justify-between items-start flex-wrap gap-2">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-lg font-semibold">
-                              Order #{order.orderID}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Placed on {formatDate(order.createdAt)}
-                            </p>
-                          </div>
-                          <Chip
-                            color={getStatusColor(order.status)}
-                            variant="flat"
-                            size="sm"
-                          >
-                            {order.status || "Pending"}
-                          </Chip>
-                        </div>
+          ) : filteredAndSortedOrders?.length > 0 ? (
+            <>
+              <div className="flex flex-col gap-4">
+                {filteredAndSortedOrders.map((order) => (
+                  <UserOrderItem key={order.id} order={order} />
+                ))}
+              </div>
 
-                        {/* Order Details Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t-1 border-gray-200 dark:border-gray-700">
-                          {/* Total Amount */}
-                          <div className="flex items-center gap-2">
-                            <FaMoneyBillWave className="text-teal-500 text-lg" />
-                            <div>
-                              <p className="text-xs text-gray-500">
-                                Total Amount
-                              </p>
-                              <p className="text-sm font-semibold">
-                                {order.totalPrice?.toFixed(2) || "0.00"} Taka
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Items Count */}
-                          <div className="flex items-center gap-2">
-                            <FaBox className="text-blue-500 text-lg" />
-                            <div>
-                              <p className="text-xs text-gray-500">Items</p>
-                              <p className="text-sm font-semibold">
-                                {order.orderItems?.length || 0} item(s)
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Delivery Date */}
-                          <div className="flex items-center gap-2">
-                            <FaTruck className="text-green-500 text-lg" />
-                            <div>
-                              <p className="text-xs text-gray-500">
-                                Delivery Date
-                              </p>
-                              <p className="text-sm font-semibold">
-                                {formatDate(order.deliveryScheduledAt)}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Payment Method */}
-                          <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-purple-500 text-lg" />
-                            <div>
-                              <p className="text-xs text-gray-500">Payment</p>
-                              <p className="text-sm font-semibold capitalize">
-                                {order.paymentMethod || "COD"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardBody>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <PaginationComponent
+                  currentPage={currentPage}
+                  total={totalPages}
+                  onChange={setCurrentPage}
+                  limit={limit}
+                  setLimit={setLimit}
+                  showControls={true}
+                />
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center h-[200px]">
               <p className="text-lg font-semibold text-gray-500">
-                No orders found
+                {statusFilter && statusFilter !== ""
+                  ? "No orders found with selected filter"
+                  : "No orders found"}
               </p>
               <p className="text-sm text-gray-400 mt-2">
-                Your order history will appear here
+                {statusFilter && statusFilter !== ""
+                  ? "Try adjusting your filters"
+                  : "Your order history will appear here"}
               </p>
             </div>
           )}
