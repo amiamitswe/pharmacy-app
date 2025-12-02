@@ -1,13 +1,12 @@
 import { Divider, Image } from "@heroui/react";
-import React from "react";
 import heroImage from "../../assets/home/hero.webp";
 
 function HeroSection() {
   return (
     <div className="w-full relative">
-      <div className="h-72 md:h-full">
+      <div className="h-72 md:h-80 lg:h-96 xl:h-[500px]">
       <Image classNames={{
-        wrapper: "h-full"
+        wrapper: "h-full !max-w-full"
       }} src={heroImage} radius="none" className="h-full w-full object-cover" />
       </div>
       <div className="absolute top-1/2 md:left-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10/12 md:w-auto">

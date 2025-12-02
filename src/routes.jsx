@@ -1,4 +1,5 @@
 // routes.jsx
+import { Navigate } from "react-router";
 import {
   publicGate,
   redirectIfAuthedOnLogin,
@@ -65,14 +66,15 @@ const routes = [
     element: <AdminLayout />,
     loader: requireAdmin,
     children: [
-      { index: true, element: <AdminDashboard /> },
+      { index: true, element: <Navigate to="/admin/orders" replace /> },
+      { path: "dashboard", element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
-      { path: "companies", element: <AdminCompanies /> },
-      { path: "medicine_categories", element: <AdminMedicineCategory /> },
-      { path: "medicine", element: <AdminMedicines /> },
-      { path: "medicine/add_new", element: <AdminAddNewMedicine /> },
-      { path: "medicine_form", element: <AdminMedicineForm /> },
-      { path: "medicine_generic", element: <AdminGeneric /> },
+      { path: "settings/companies", element: <AdminCompanies /> },
+      { path: "settings/medicine_categories", element: <AdminMedicineCategory /> },
+      { path: "settings/medicine", element: <AdminMedicines /> },
+      { path: "settings/medicine/add_new", element: <AdminAddNewMedicine /> },
+      { path: "settings/medicine_form", element: <AdminMedicineForm /> },
+      { path: "settings/medicine_generic", element: <AdminGeneric /> },
       { path: "users", element: <AdminUsers /> },
       { path: "editor", element: <AdminEditor /> },
       { path: "*", element: <AdminNotFound /> },
@@ -85,6 +87,7 @@ const routes = [
     element: <UserLayout />,
     loader: requireUser, // blocks anon and admins
     children: [
+      { index: true, element: <Navigate to="/user/profile" replace /> },
       { path: "orders", element: <UserOrders /> },
       { path: "profile", element: <UserProfile /> },
       { path: "orders/:id", element: <UserOrderDetails /> },

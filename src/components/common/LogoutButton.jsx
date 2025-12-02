@@ -4,7 +4,7 @@ import { addToast, Button } from "@heroui/react";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import userService from "../../api-services/userService";
 
-export default function LogoutButton() {
+export default function LogoutButton({ className }) {
   const setAuth = useSetAtom(authAtom);
 
   async function handleLogout() {
@@ -27,7 +27,13 @@ export default function LogoutButton() {
   }
 
   return (
-    <Button variant="solid" color="primary" radius="sm" onPress={handleLogout}>
+    <Button
+      variant="solid"
+      color="primary"
+      radius="sm"
+      onPress={handleLogout}
+      className={className}
+    >
       <RiLogoutCircleRLine className="h-5 w-5" /> Logout
     </Button>
   );
