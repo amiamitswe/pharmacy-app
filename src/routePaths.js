@@ -1,5 +1,5 @@
 const adminLinks = [
-  // { id: 1, label: "Dashboard", to: "/admin" },
+  { id: 0, label: "Dashboard", to: "/admin/dashboard" },
   { id: 1, label: "Companies", to: "/admin/companies" },
   { id: 2, label: "Medicines", to: "/admin/medicine" },
   { id: 3, label: "Medicine Form", to: "/admin/medicine_form" },

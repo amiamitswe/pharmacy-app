@@ -16,6 +16,7 @@ async function fetchUserFromServer() {
       loggedIn: true,
       cartItemCount: response.data.user.cartItemCount || 0,
       cartItems: response.data.cartItems || [],
+      avatar: response.data.user.image_url,
     };
   } else {
     return null;
@@ -43,6 +44,7 @@ async function getUser() {
         loggedIn: false,
         role: null,
         name: null,
+        avatar: null,
       });
       return null;
     }

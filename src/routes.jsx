@@ -1,4 +1,5 @@
 // routes.jsx
+import { Navigate } from "react-router";
 import {
   publicGate,
   redirectIfAuthedOnLogin,
@@ -65,7 +66,8 @@ const routes = [
     element: <AdminLayout />,
     loader: requireAdmin,
     children: [
-      { index: true, element: <AdminDashboard /> },
+      { index: true, element: <Navigate to="/admin/orders" replace /> },
+      { path: "dashboard", element: <AdminDashboard /> },
       { path: "orders", element: <AdminOrders /> },
       { path: "companies", element: <AdminCompanies /> },
       { path: "medicine_categories", element: <AdminMedicineCategory /> },
@@ -85,6 +87,7 @@ const routes = [
     element: <UserLayout />,
     loader: requireUser, // blocks anon and admins
     children: [
+      { index: true, element: <Navigate to="/user/profile" replace /> },
       { path: "orders", element: <UserOrders /> },
       { path: "profile", element: <UserProfile /> },
       { path: "orders/:id", element: <UserOrderDetails /> },

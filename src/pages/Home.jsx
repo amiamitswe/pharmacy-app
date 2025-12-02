@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-130px)] flex flex-col justify-between">
+      <div className="w-full container mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-625px)] flex flex-col justify-between">
         <HomeMedicineList />
       </div>
     </div>
