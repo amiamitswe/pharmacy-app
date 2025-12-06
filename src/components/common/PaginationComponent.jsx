@@ -29,6 +29,9 @@ function PaginationComponent({
         size="sm"
         classNames={{
           wrapper: "gap-2",
+          item: "cursor-pointer",
+          next: "cursor-pointer",
+          prev: "cursor-pointer",
         }}
       />
 

@@ -13,7 +13,9 @@ import { today } from "@internationalized/date";
 import AdminOrderItem from "../../components/admin/AdminOrderItem";
 import PaginationComponent from "../../components/common/PaginationComponent";
 import { FaFilter, FaTimes, FaSortUp, FaSortDown } from "react-icons/fa";
-import { ORDER_SORT_OPTIONS, ORDER_STATUS_OPTIONS } from "../../utils/order_related_static_data";
+import {
+  ORDER_SORT_OPTIONS,
+} from "../../utils/order_related_static_data";
 
 const DHAKA_TIMEZONE = "Asia/Dhaka";
 
@@ -27,6 +29,7 @@ export default function AdminOrders() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [availableOrderStatus, setAvailableOrderStatus] = useState([]);
 
   // Fetch orders from API
   useEffect(() => {
@@ -52,6 +55,7 @@ export default function AdminOrders() {
           // API response structure: { result: [], total: 6, dataCount: 2, limit: 2, status: true, message: "..." }
           setOrders(response.data.result || []);
           setTotalOrders(response.data.total || 0);
+          setAvailableOrderStatus(response.data.availableStatus || []);
         }
       } catch (error) {
         console.log(error);
@@ -86,11 +90,13 @@ export default function AdminOrders() {
     if (!statusFilter) {
       return "All Orders";
     }
-    const statusOption = ORDER_STATUS_OPTIONS.find(
-      (opt) => opt.value === statusFilter
+    const statusOption = availableOrderStatus.find(
+      (status) => status === statusFilter
     );
-    return statusOption ? `${statusOption.label} Orders` : "Orders";
-  }, [statusFilter]);
+    return statusOption
+      ? `${statusOption.replace(/_/g, " ")} Orders`
+      : "Orders";
+  }, [statusFilter, availableOrderStatus]);
 
   const handleClearFilters = () => {
     setStatusFilter("order_pending");
@@ -100,19 +106,23 @@ export default function AdminOrders() {
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = statusFilter !== "order_pending" || startDate || endDate || sortOrder !== "desc";
+  const hasActiveFilters =
+    statusFilter !== "order_pending" ||
+    startDate ||
+    endDate ||
+    sortOrder !== "desc";
 
   return (
     <div className="flex flex-col gap-4">
       {/* Filter Section */}
-      <Card shadow="sm">
+      <Card shadow="sm" className="bg-gray-100 dark:bg-gray-900">
         <CardBody className="p-3">
           <div className="flex flex-col gap-2">
             {/* Status Count - Moved to Top */}
             <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <span className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                 Current {statusLabel}:
+                  Current {statusLabel}:
                 </span>
                 <span className="text-xl font-bold text-teal-600 dark:text-teal-400">
                   {filteredOrdersCount}
@@ -148,16 +158,24 @@ export default function AdminOrders() {
                 size="sm"
                 label="Order Status"
                 placeholder="Select status"
-                selectedKeys={statusFilter ? new Set([statusFilter]) : new Set()}
+                selectedKeys={
+                  statusFilter ? new Set([statusFilter]) : new Set()
+                }
                 onSelectionChange={(keys) => {
                   const selected = Array.from(keys)[0];
                   setStatusFilter(selected || "");
                 }}
                 variant="bordered"
+                classNames={{
+                  value: "capitalize",
+                }}
               >
-                {ORDER_STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                <SelectItem key="" value="" className="capitalize">
+                  All Status
+                </SelectItem>
+                {availableOrderStatus.map((status) => (
+                  <SelectItem key={status} value={status} className="capitalize">
+                    {status.replace(/_/g, " ")}
                   </SelectItem>
                 ))}
               </Select>
@@ -230,7 +248,14 @@ export default function AdminOrders() {
         <>
           <div className="flex flex-col gap-4">
             {orders.map((order) => (
-              <AdminOrderItem key={order.id || order.orderID} order={order} />
+              <AdminOrderItem
+                key={order.id || order.orderID}
+                order={order}
+                setOrders={setOrders}
+                availableOrderStatus={availableOrderStatus?.filter(
+                  (item) => item !== order.orderStatus
+                )}
+              />
             ))}
           </div>
 

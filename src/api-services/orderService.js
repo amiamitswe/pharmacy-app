@@ -22,6 +22,16 @@ const orderService = {
     });
     return response;
   },
+
+  updateOrderStatusByAdmin: async (payload) => {
+    const response = await api.put(
+      `/orders/admin/update-order-status/${payload.orderId}`,
+      {
+        orderStatus: payload.orderStatus,
+      }
+    );
+    return response;
+  },
 };
 
 export default orderService;
