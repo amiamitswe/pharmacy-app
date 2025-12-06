@@ -1,15 +1,21 @@
-import React from "react";
-import { Accordion, AccordionItem, Chip, Image, Divider } from "@heroui/react";
+import React, { useState } from "react";
+import { Accordion, AccordionItem, Chip, Image, Divider, Select, SelectItem, addToast, Spinner } from "@heroui/react";
+import dayjs from "dayjs";
+import orderService from "../../api-services/orderService";
 import {
   FaMoneyBillWave,
   FaTruck,
   FaMapMarkerAlt,
   FaHome,
   FaBuilding,
+  FaPhone,
 } from "react-icons/fa";
 import { HiLocationMarker } from "react-icons/hi";
+import { getStatusColor } from "../../utils/order_status_colors";
 
-function AdminOrderItem({ order }) {
+function AdminOrderItem({ order, setOrders, availableOrderStatus }) {
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -32,27 +38,32 @@ function AdminOrderItem({ order }) {
     });
   };
 
-  const getStatusColor = (status) => {
-    const statusLower = status?.toLowerCase();
-    if (statusLower?.includes("pending")) {
-      return "warning";
+  const formatDateTimeLong = (dateString) => {
+    if (!dateString) return "N/A";
+    return dayjs(dateString).format("dddd, D MMM YYYY [at] h.mm A");
+  };
+
+  const getDeliveryDateColor = (dateString) => {
+    if (!dateString) return "text-gray-500 dark:text-gray-400";
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Compare full datetime
+    if (date.getTime() < now.getTime()) {
+      return "text-red-500 dark:text-red-400";
+    } else {
+      // Check if it's today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const compareDate = new Date(date);
+      compareDate.setHours(0, 0, 0, 0);
+      
+      if (compareDate.getTime() === today.getTime()) {
+        return "text-orange-500 dark:text-orange-400";
+      } else {
+        return "text-green-500 dark:text-green-400";
+      }
     }
-    if (
-      statusLower?.includes("delivered") ||
-      statusLower?.includes("completed")
-    ) {
-      return "success";
-    }
-    if (statusLower?.includes("cancelled") || statusLower?.includes("failed")) {
-      return "danger";
-    }
-    if (
-      statusLower?.includes("processing") ||
-      statusLower?.includes("shipped")
-    ) {
-      return "primary";
-    }
-    return "default";
   };
 
   const getAddressTypeIcon = (type) => {
@@ -63,6 +74,48 @@ function AdminOrderItem({ order }) {
       return <FaBuilding className="text-purple-600 dark:text-purple-400" />;
     }
     return <HiLocationMarker className="text-gray-600 dark:text-gray-400" />;
+  };
+
+  const handleStatusUpdate = async (newStatus) => {
+    if (!newStatus || newStatus === order?.orderStatus) return;
+
+    setIsUpdating(true);
+    try {
+      const response = await orderService.updateOrderStatusByAdmin({
+        orderId: order?.id,
+        orderStatus: newStatus,
+      });
+
+      if (response.status === 200 && response.data.status) {
+        // Update the order in the orders list
+        setOrders((prevOrders) =>
+          prevOrders.map((o) =>
+            o.orderID === order.orderID
+              ? { ...o, orderStatus: newStatus }
+              : o
+          )
+        );
+        addToast({
+          title: "Status updated",
+          description: `Order status changed to ${newStatus.replace(/_/g, " ")}`,
+          color: "success",
+        });
+      } else {
+        addToast({
+          title: "Update failed",
+          description: response.data?.message || "Could not update order status",
+          color: "danger",
+        });
+      }
+    } catch (error) {
+      addToast({
+        title: "Error",
+        description: error?.message || "Something went wrong",
+        color: "danger",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -91,7 +144,7 @@ function AdminOrderItem({ order }) {
                 Placed: {formatDateShort(order?.createdAt)}
               </span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Delivery: {formatDateShort(order?.deliveryScheduledAt)}
+                Delivery: <span className={`font-medium ${getDeliveryDateColor(order?.deliveryScheduledAt)}`}>{formatDateTimeLong(order?.deliveryScheduledAt)}</span>
               </span>
             </div>
             <Chip
@@ -100,7 +153,7 @@ function AdminOrderItem({ order }) {
               size="sm"
               className="capitalize"
             >
-              {order?.orderStatus?.replace("_", " ") || "Pending"}
+              {order?.orderStatus?.replace(/_/g, " ") || "Pending"}
             </Chip>
           </div>
         }
@@ -189,41 +242,100 @@ function AdminOrderItem({ order }) {
               </div>
             </div>
 
-            {/* Address */}
-            {order?.address && (
+            {/* Contact and Address */}
+            {(order?.phone || order?.address) && (
               <div>
                 <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 flex items-center gap-1">
                   <FaMapMarkerAlt className="text-red-500 text-xs" />
-                  Address
+                  Contact and Address
                 </h3>
                 <div className="text-xs space-y-1">
-                  <div className="flex items-center gap-1">
-                    {getAddressTypeIcon(order.address.addressType)}
-                    <span className="font-semibold capitalize">
-                      {order.address.addressType}
-                    </span>
-                  </div>
-                  <div className="ml-5 text-gray-600 dark:text-gray-400">
-                    {order.address.street && (
-                      <p className="truncate">{order.address.street}</p>
-                    )}
-                    <p className="truncate">
-                      {[
-                        order.address.location,
-                        order.address.city,
-                        order.address.zipCode,
-                      ]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-                    {order.address.country && (
-                      <p className="truncate">{order.address.country}</p>
-                    )}
-                  </div>
+                  {/* Phone */}
+                  {order?.phone && (
+                    <div className="mb-3">
+                      <div className="flex items-center gap-1">
+                        <FaPhone className="text-blue-500 text-xs" />
+                        <span className="font-semibold">Phone</span>
+                      </div>
+                      <div className="ml-5 text-gray-600 dark:text-gray-400">
+                        <a 
+                          href={`tel:${order.phone}`}
+                          className="truncate text-gray-600 dark:text-gray-400 hover:underline"
+                        >
+                          {order.phone}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {/* Address */}
+                  {order?.address && (
+                    <div>
+                      <div className="flex items-center gap-1">
+                        {getAddressTypeIcon(order.address.addressType)}
+                        <span className="font-semibold capitalize">
+                          {order.address.addressType}
+                        </span>
+                      </div>
+                      <div className="ml-5 text-gray-600 dark:text-gray-400">
+                        {order.address.street && (
+                          <p className="truncate">{order.address.street}</p>
+                        )}
+                        <p className="truncate">
+                          {[
+                            order.address.location,
+                            order.address.city,
+                            order.address.zipCode,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                        {order.address.country && (
+                          <p className="truncate">{order.address.country}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
+        </div>
+        <Divider className="my-4" />
+        <div className="flex justify-end items-center gap-2">
+          {availableOrderStatus && availableOrderStatus.length > 0 ? (
+            <Select
+              size="sm"
+              label="Update Status"
+              placeholder="Select new status"
+              selectedKeys={new Set([order?.orderStatus])}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0];
+                if (selected) {
+                  handleStatusUpdate(selected);
+                }
+              }}
+              variant="bordered"
+              isDisabled={isUpdating}
+              className="min-w-[200px]"
+              startContent={isUpdating ? <Spinner size="sm" /> : null}
+              classNames={{
+                value: "capitalize",
+              }}
+            >
+              <SelectItem key={order?.orderStatus} value={order?.orderStatus} className="capitalize">
+                {order?.orderStatus?.replace(/_/g, " ") || "Current"}
+              </SelectItem>
+              {availableOrderStatus.map((status) => (
+                <SelectItem key={status} value={status} className="capitalize">
+                  {status.replace(/_/g, " ")}
+                </SelectItem>
+              ))}
+            </Select>
+          ) : (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              No status updates available
+            </span>
+          )}
         </div>
       </AccordionItem>
     </Accordion>

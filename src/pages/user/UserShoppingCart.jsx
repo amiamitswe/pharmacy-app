@@ -9,7 +9,7 @@ import {
   RadioGroup,
 } from "@heroui/react";
 import React, { useEffect, useState } from "react";
-import { today, toCalendarDateTime } from "@internationalized/date";
+import { now, CalendarDateTime } from "@internationalized/date";
 import addToCartService from "../../api-services/addToCartService";
 import { useNavigate } from "react-router";
 import CartItems from "../../components/user/cart/CartItems";
@@ -21,27 +21,45 @@ import { authAtom } from "../../atoms/authAtom";
 
 const DHAKA_TIMEZONE = "Asia/Dhaka";
 
-const formatDateToISO = (calendarDate) => {
-  if (!calendarDate) {
-    const now = new Date();
+const formatDateToISO = (calendarDateTime) => {
+  if (!calendarDateTime) {
+    const currentDate = new Date();
     const dhakaDate = new Date(
-      now.toLocaleString("en-US", { timeZone: DHAKA_TIMEZONE })
+      currentDate.toLocaleString("en-US", { timeZone: DHAKA_TIMEZONE })
     );
     dhakaDate.setHours(11, 0, 0, 0);
     return dhakaDate.toISOString();
   }
 
-  const dateTime = toCalendarDateTime(calendarDate, {
-    hour: 11,
-    minute: 0,
-    second: 0,
-  });
-  return dateTime.toDate(DHAKA_TIMEZONE).toISOString();
+  // CalendarDateTime has hour, minute, second properties
+  return calendarDateTime.toDate(DHAKA_TIMEZONE).toISOString();
 };
 
 function UserShoppingCart() {
   const navigate = useNavigate();
-  const [value, setValue] = useState(today(DHAKA_TIMEZONE));
+  // Calculate next full hour from now as minimum selectable time
+  // Round up to the next hour (e.g., 2:30 PM -> 3:00 PM)
+  const getNextHour = () => {
+    const current = now(DHAKA_TIMEZONE);
+    const currentJsDate = current.toDate(DHAKA_TIMEZONE);
+    // Round up to next hour: set minutes/seconds to 0, then add 1 hour
+    currentJsDate.setMinutes(0, 0, 0);
+    currentJsDate.setHours(currentJsDate.getHours() + 1);
+    
+    // Create CalendarDateTime using constructor
+    const year = currentJsDate.getFullYear();
+    const month = currentJsDate.getMonth() + 1; // CalendarDateTime uses 1-based months
+    const day = currentJsDate.getDate();
+    const hour = currentJsDate.getHours();
+    const minute = currentJsDate.getMinutes();
+    const second = currentJsDate.getSeconds();
+    
+    // Use CalendarDateTime constructor
+    return new CalendarDateTime(year, month, day, hour, minute, second);
+  };
+  
+  const nextHour = getNextHour();
+  const [dateTimeValue, setDateTimeValue] = useState(nextHour);
   const [cartData, setCartData] = useState(null);
  
   const setAuth = useSetAtom(authAtom);
@@ -70,7 +88,7 @@ function UserShoppingCart() {
     const data = {
       cartId: cartData?._id,
       paymentMethod: "cod",
-      deliveryScheduledAt: formatDateToISO(value),
+      deliveryScheduledAt: formatDateToISO(dateTimeValue),
     };
 
     console.log(data);
@@ -150,9 +168,13 @@ function UserShoppingCart() {
               </div>
 
               <DatePicker
-                label="Select Delivery Date"
-                value={value}
-                onChange={(date) => setValue(date)}
+                hideTimeZone
+                showMonthAndYearPickers
+                defaultValue={nextHour}
+                value={dateTimeValue}
+                onChange={(dateTime) => setDateTimeValue(dateTime)}
+                minValue={nextHour}
+                label="Select Delivery Date & Time"
                 className="mt-4"
                 classNames={{
                   inputWrapper:

@@ -9,6 +9,8 @@ import {
   Spinner,
   Image,
   Divider,
+  Accordion,
+  AccordionItem,
 } from "@heroui/react";
 import {
   FaCalendarAlt,
@@ -18,13 +20,20 @@ import {
   FaMapMarkerAlt,
   FaHome,
   FaBuilding,
+  FaPhone,
+  FaClipboardList,
+  FaHistory,
+  FaClock,
+  FaChevronDown,
 } from "react-icons/fa";
 import { HiLocationMarker } from "react-icons/hi";
+import { getStatusColor } from "../../utils/order_status_colors";
 
 function UserOrderDetails() {
   const { id } = useParams();
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -56,22 +65,6 @@ function UserOrderDetails() {
     });
   };
 
-  const getStatusColor = (status) => {
-    const statusLower = status?.toLowerCase();
-    if (statusLower?.includes("pending")) {
-      return "warning";
-    }
-    if (statusLower?.includes("delivered") || statusLower?.includes("completed")) {
-      return "success";
-    }
-    if (statusLower?.includes("cancelled") || statusLower?.includes("failed")) {
-      return "danger";
-    }
-    if (statusLower?.includes("processing") || statusLower?.includes("shipped")) {
-      return "primary";
-    }
-    return "default";
-  };
 
   const getAddressTypeIcon = (type) => {
     const typeLower = type?.toLowerCase() || "";
@@ -128,7 +121,7 @@ function UserOrderDetails() {
             size="lg"
             className="capitalize"
           >
-            {orderData.orderStatus?.replace("_", " ") || "Pending"}
+            {orderData.orderStatus?.replace(/_/g, " ") || "Pending"}
           </Chip>
         </CardHeader>
       </Card>
@@ -224,7 +217,10 @@ function UserOrderDetails() {
           {/* Order Summary */}
           <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
             <CardHeader>
-              <p className="text-lg font-semibold">Order Summary</p>
+              <p className="text-lg font-semibold flex items-center gap-2">
+                <FaClipboardList className="text-blue-500" />
+                Order Summary
+              </p>
             </CardHeader>
             <CardBody>
               <div className="flex flex-col gap-4">
@@ -280,17 +276,28 @@ function UserOrderDetails() {
             </CardBody>
           </Card>
 
-          {/* Shipping Address */}
+          {/* Contact and Shipping Address */}
           <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
             <CardHeader>
               <p className="text-lg font-semibold flex items-center gap-2">
                 <FaMapMarkerAlt className="text-red-500" />
-                Shipping Address
+                Contact and Shipping Address
               </p>
             </CardHeader>
             <CardBody>
               {orderData.address ? (
                 <div className="flex flex-col gap-3">
+                  {orderData.phone && (
+                    <div className="flex items-center gap-2">
+                      <div className="text-xl">
+                        <FaPhone className="text-gray-600 dark:text-gray-400" />
+                      </div>
+                      <p className="font-semibold text-base text-gray-800 dark:text-gray-200">
+                        {orderData.phone}
+                      </p>
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-2">
                     <div className="text-xl">
                       {getAddressTypeIcon(orderData.address.addressType)}
@@ -322,6 +329,104 @@ function UserOrderDetails() {
                 <p className="text-sm text-gray-500">No address available</p>
               )}
             </CardBody>
+          </Card>
+
+          {/* Order Activity Timeline */}
+          <Card shadow="sm" className="bg-gray-50 dark:bg-gray-900">
+            <CardHeader>
+              <div
+                className="flex items-center justify-between w-full cursor-pointer"
+                onClick={() => setIsTimelineOpen(!isTimelineOpen)}
+              >
+                <p className="text-lg font-semibold flex items-center gap-2">
+                  <FaHistory className="text-indigo-500" />
+                  Order Activity Timeline
+                </p>
+                <FaChevronDown
+                  className={`text-gray-500 transition-transform duration-200 ${
+                    isTimelineOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
+            </CardHeader>
+            {isTimelineOpen && (
+              <CardBody className="pt-0">
+                <Accordion
+                  selectedKeys={
+                    isTimelineOpen ? new Set(["activity-timeline"]) : new Set()
+                  }
+                  onSelectionChange={(keys) =>
+                    setIsTimelineOpen(keys.has("activity-timeline"))
+                  }
+                  className="bg-transparent"
+                  itemClasses={{
+                    base: "bg-transparent",
+                    title: "hidden",
+                    trigger: "hidden",
+                    content: "px-0 pb-2",
+                  }}
+                >
+                <AccordionItem
+                  key="activity-timeline"
+                  aria-label="View Activity Timeline"
+                  title=""
+                >
+                  {orderData?.timeAccordingOrderStatus &&
+                  orderData.timeAccordingOrderStatus.length > 0 ? (
+                    <div className="flex flex-col gap-4">
+                      {(() => {
+                        const reversedActivities = [
+                          ...orderData.timeAccordingOrderStatus,
+                        ].reverse();
+                        return reversedActivities.map((activity, index) => (
+                          <div key={activity._id || index}>
+                            <div className="flex items-start gap-3">
+                              {/* Timeline dot */}
+                              <div className="flex flex-col items-center mt-1">
+                                <div
+                                  className={`w-3 h-3 rounded-full ${
+                                    index === 0
+                                      ? "bg-indigo-500"
+                                      : "bg-gray-400 dark:bg-gray-600"
+                                  }`}
+                                />
+                                {index < reversedActivities.length - 1 && (
+                                  <div className="w-0.5 h-full min-h-[40px] bg-gray-300 dark:bg-gray-700 mt-1" />
+                                )}
+                              </div>
+
+                              {/* Activity content */}
+                              <div className="flex-1 pb-4">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Chip
+                                    color={getStatusColor(activity.status)}
+                                    variant="flat"
+                                    size="sm"
+                                    className="capitalize"
+                                  >
+                                    {activity.status?.replace(/_/g, " ") ||
+                                      "Unknown"}
+                                  </Chip>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                  <FaClock className="text-gray-400" />
+                                  <span>{formatDate(activity.time)}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      No activity history available
+                    </p>
+                  )}
+                </AccordionItem>
+              </Accordion>
+              </CardBody>
+            )}
           </Card>
         </div>
       </div>

@@ -10,7 +10,6 @@ import React, { useEffect, useState } from "react";
 import orderService from "../../api-services/orderService";
 import {
   ORDER_SORT_OPTIONS,
-  ORDER_STATUS_OPTIONS,
 } from "../../utils/order_related_static_data";
 import UserOrderItem from "../../components/user/orders/UserOrderItem";
 import PaginationComponent from "../../components/common/PaginationComponent";
@@ -23,6 +22,7 @@ function UserOrders() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [availableOrderStatus, setAvailableOrderStatus] = useState([]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -43,6 +43,7 @@ function UserOrders() {
               response.data.count ||
               (response.data.data || []).length
           );
+          setAvailableOrderStatus(response.data.availableStatus || []);
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -92,10 +93,16 @@ function UserOrders() {
               }}
               variant="bordered"
               className="flex-1 sm:flex-none sm:w-[180px]"
+              classNames={{
+                value: "capitalize",
+              }}
             >
-              {ORDER_STATUS_OPTIONS?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              <SelectItem key="" value="" className="capitalize">
+                All Status
+              </SelectItem>
+              {availableOrderStatus.map((status) => (
+                <SelectItem key={status} value={status} className="capitalize">
+                  {status.replace(/_/g, " ")}
                 </SelectItem>
               ))}
             </Select>
