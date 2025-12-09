@@ -27,6 +27,11 @@ const medicineService = {
     const response = await api.post("/medicine", data);
     return response;
   },
+
+  updateMedicine: async (id, data) => {
+    const response = await api.patch(`/medicine/${id}`, data);
+    return response;
+  },
 };
 
 export default medicineService;
