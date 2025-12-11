@@ -1,6 +1,6 @@
 import { addToast, Card } from "@heroui/react";
 import { useAtom } from "jotai";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { medicineAtom } from "../../atoms/medicineAtom";
 import PageTopContent from "../../components/common/PageTopContent";
 import medicineService from "../../api-services/medicineService";
@@ -19,41 +19,41 @@ function AdminMedicines() {
 
   const debouncedQuery = useDebounce(search, 1000);
 
-  useEffect(() => {
-    const getAllMedicines = async () => {
-      setMedicines({
-        loading: true,
+  const getAllMedicines = useCallback(async () => {
+    setMedicines({
+      loading: true,
+    });
+    try {
+      const response = await medicineService.getList({
+        page: currentPage,
+        limit: limit,
+        q: debouncedQuery.toLowerCase(),
       });
-      try {
-        const response = await medicineService.getList(
-          currentPage,
-          limit,
-          debouncedQuery.toLowerCase()
-        );
 
-        if (response.status === 200) {
-          setMedicines({
-            medicines: response?.data?.result || [],
-            loading: false,
-            error: null,
-            count: response?.data?.total || 0,
-          });
-        }
-      } catch (error) {
-        addToast({
-          title: error.data.message || "Unable to fetch medicines",
-          color: "danger",
-        });
-      } finally {
-        setMedicines((pre) => ({
-          ...pre,
+      if (response.status === 200) {
+        setMedicines({
+          medicines: response?.data?.result || [],
           loading: false,
-        }));
+          error: null,
+          count: response?.data?.total || 0,
+        });
       }
-    };
+    } catch (error) {
+      addToast({
+        title: error.data.message || "Unable to fetch medicines",
+        color: "danger",
+      });
+    } finally {
+      setMedicines((pre) => ({
+        ...pre,
+        loading: false,
+      }));
+    }
+  }, [currentPage, limit, debouncedQuery, setMedicines]);
 
+  useEffect(() => {
     getAllMedicines();
-  }, [currentPage, limit, debouncedQuery]);
+  }, [getAllMedicines]);
 
   return (
     <>
@@ -68,7 +68,7 @@ function AdminMedicines() {
         setSearch={setSearch}
       />
       <Card className="p-4 bg-slate-50 dark:bg-slate-900" shadow="sm">
-        <MedicineList editMode={editMode} />
+        <MedicineList editMode={editMode} onUpdateSuccess={getAllMedicines} />
         {medicineState?.count > 0 ? (
           <PaginationComponent
             currentPage={currentPage}
